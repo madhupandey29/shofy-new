@@ -57,6 +57,8 @@ function getImageUrl(item) {
 const SLIDER_SETTINGS = {
   spaceBetween: 30,
   slidesPerView: 1,
+  loop: true,
+  loopAdditionalSlides: 2,
   autoplay: {
     delay: 4000,
     disableOnInteraction: false,
@@ -90,6 +92,8 @@ const SLIDER_SETTINGS = {
     1400: { 
       slidesPerView: 4, 
       spaceBetween: 30,
+      loop: true,
+      loopAdditionalSlides: 2,
       autoplay: {
         delay: 4000,
         disableOnInteraction: false,
@@ -99,6 +103,8 @@ const SLIDER_SETTINGS = {
     1200: { 
       slidesPerView: 3, 
       spaceBetween: 25,
+      loop: true,
+      loopAdditionalSlides: 2,
       autoplay: {
         delay: 4000,
         disableOnInteraction: false,
@@ -108,6 +114,8 @@ const SLIDER_SETTINGS = {
     992: { 
       slidesPerView: 3, 
       spaceBetween: 20,
+      loop: true,
+      loopAdditionalSlides: 2,
       autoplay: {
         delay: 4000,
         disableOnInteraction: false,
@@ -117,6 +125,8 @@ const SLIDER_SETTINGS = {
     768: { 
       slidesPerView: 2, 
       spaceBetween: 16,
+      loop: true,
+      loopAdditionalSlides: 1,
       autoplay: {
         delay: 4500,
         disableOnInteraction: false,
@@ -129,6 +139,7 @@ const SLIDER_SETTINGS = {
       centeredSlides: false,
       initialSlide: 0,
       loop: true,
+      loopAdditionalSlides: 1,
       autoplay: {
         delay: 4500,
         disableOnInteraction: false,
@@ -147,6 +158,7 @@ const SLIDER_SETTINGS = {
       centeredSlides: false,
       initialSlide: 0,
       loop: true,
+      loopAdditionalSlides: 1,
       autoplay: {
         delay: 4500,
         disableOnInteraction: false,

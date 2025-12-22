@@ -89,7 +89,8 @@ function getItemImage(item) {
 /* ---------- slider options ---------- */
 const SLIDER_OPTS = {
   spaceBetween: 24,
-  rewind: true,
+  loop: true,
+  loopAdditionalSlides: 2,
   speed: 400,
   centeredSlides: false,
   autoplay: {
@@ -124,6 +125,8 @@ const SLIDER_OPTS = {
     1400: { 
       slidesPerView: 5, 
       spaceBetween: 24,
+      loop: true,
+      loopAdditionalSlides: 2,
       autoplay: {
         delay: 3500,
         disableOnInteraction: false,
@@ -133,6 +136,8 @@ const SLIDER_OPTS = {
     1200: { 
       slidesPerView: 4, 
       spaceBetween: 20,
+      loop: true,
+      loopAdditionalSlides: 2,
       autoplay: {
         delay: 3500,
         disableOnInteraction: false,
@@ -142,6 +147,8 @@ const SLIDER_OPTS = {
     992: { 
       slidesPerView: 3, 
       spaceBetween: 20,
+      loop: true,
+      loopAdditionalSlides: 2,
       autoplay: {
         delay: 3500,
         disableOnInteraction: false,
@@ -151,6 +158,8 @@ const SLIDER_OPTS = {
     768: { 
       slidesPerView: 2, 
       spaceBetween: 16,
+      loop: true,
+      loopAdditionalSlides: 1,
       autoplay: {
         delay: 4000,
         disableOnInteraction: false,
@@ -163,6 +172,7 @@ const SLIDER_OPTS = {
       centeredSlides: false,
       initialSlide: 0,
       loop: true,
+      loopAdditionalSlides: 1,
       autoplay: {
         delay: 4000,
         disableOnInteraction: false,
@@ -181,6 +191,7 @@ const SLIDER_OPTS = {
       centeredSlides: false,
       initialSlide: 0,
       loop: true,
+      loopAdditionalSlides: 1,
       autoplay: {
         delay: 4000,
         disableOnInteraction: false,
