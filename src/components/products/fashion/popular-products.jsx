@@ -113,11 +113,13 @@ const SLIDER_OPTS = {
   touchStartPreventDefault: false,
   touchMoveStopPropagation: false,
   resistanceRatio: 0.85,
-  threshold: 10,
+  threshold: 5,
   longSwipesRatio: 0.5,
   longSwipesMs: 300,
   followFinger: true,
   grabCursor: true,
+  touchEventsTarget: 'container',
+  passiveListeners: false,
   breakpoints: {
     1400: { 
       slidesPerView: 5, 
@@ -160,28 +162,36 @@ const SLIDER_OPTS = {
       spaceBetween: 20,
       centeredSlides: false,
       initialSlide: 0,
-      loop: false,
+      loop: true,
       autoplay: {
         delay: 4000,
         disableOnInteraction: false,
         pauseOnMouseEnter: true,
       },
       freeMode: false,
-      watchSlidesProgress: true
+      watchSlidesProgress: true,
+      touchRatio: 1.2,
+      threshold: 3,
+      allowTouchMove: true,
+      simulateTouch: true,
     },
     0: { 
       slidesPerView: 1, 
       spaceBetween: 20,
       centeredSlides: false,
       initialSlide: 0,
-      loop: false,
+      loop: true,
       autoplay: {
         delay: 4000,
         disableOnInteraction: false,
         pauseOnMouseEnter: true,
       },
       freeMode: false,
-      watchSlidesProgress: true
+      watchSlidesProgress: true,
+      touchRatio: 1.2,
+      threshold: 3,
+      allowTouchMove: true,
+      simulateTouch: true,
     },
   },
   keyboard: { enabled: true, onlyInViewport: true },
@@ -678,6 +688,38 @@ export default function PopularProducts() {
           display: none !important;
         }
 
+        /* ===== MOBILE SWIPER FIXES ===== */
+        @media (max-width: 768px) {
+          .swiper {
+            touch-action: pan-y pinch-zoom !important;
+          }
+          
+          .swiper-wrapper {
+            touch-action: pan-y pinch-zoom !important;
+          }
+          
+          .swiper-slide {
+            touch-action: pan-y pinch-zoom !important;
+          }
+          
+          /* Ensure proper touch handling */
+          .tp-popular-products-slider {
+            touch-action: pan-y pinch-zoom !important;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+          }
+          
+          .tp-popular-products-slider .swiper-wrapper {
+            touch-action: pan-y pinch-zoom !important;
+          }
+          
+          .tp-popular-products-slider .swiper-slide {
+            touch-action: pan-y pinch-zoom !important;
+          }
+        }
+
         /* Responsive Design */
         @media (max-width: 1200px) {
           .tp-section-title-2 {
@@ -746,36 +788,24 @@ export default function PopularProducts() {
           .tp-popular-products-slider-wrapper {
             padding: 20px 0 40px;
             margin: 0;
-            overflow: hidden;
+            overflow: visible;
           }
           
           .tp-popular-products-slider {
-            overflow-x: auto !important;
-            overflow-y: hidden !important;
+            overflow: visible !important;
             padding: 10px 15px !important;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-          }
-          
-          .tp-popular-products-slider::-webkit-scrollbar {
-            display: none;
           }
           
           .tp-popular-products-slider .swiper-wrapper {
             display: flex !important;
             flex-direction: row !important;
             width: auto !important;
-            transform: none !important;
-            transition: none !important;
           }
           
           .tp-popular-products-slider .swiper-slide {
             width: 280px !important;
             margin-right: 15px !important;
             padding: 0 !important;
-            scroll-snap-align: start;
             flex-shrink: 0;
           }
           
