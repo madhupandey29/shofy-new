@@ -703,18 +703,18 @@ export default function PopularProducts() {
         /* ===== MOBILE SWIPER FIXES ===== */
         @media (max-width: 768px) {
           .swiper {
-            touch-action: pan-x pinch-zoom !important;
+            touch-action: auto !important; /* Allow all touch interactions */
             overflow: hidden !important;
           }
           
           .swiper-wrapper {
-            touch-action: pan-x pinch-zoom !important;
+            touch-action: auto !important; /* Allow all touch interactions */
             display: flex !important;
             align-items: stretch !important;
           }
           
           .swiper-slide {
-            touch-action: pan-x pinch-zoom !important;
+            touch-action: auto !important; /* Allow all touch interactions */
             height: auto !important;
             display: flex !important;
             flex-direction: column !important;
@@ -722,7 +722,7 @@ export default function PopularProducts() {
           
           /* Ensure proper touch handling */
           .tp-popular-products-slider {
-            touch-action: pan-x pinch-zoom !important;
+            touch-action: auto !important; /* Allow all touch interactions */
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
@@ -732,12 +732,12 @@ export default function PopularProducts() {
           }
           
           .tp-popular-products-slider .swiper-wrapper {
-            touch-action: pan-x pinch-zoom !important;
+            touch-action: auto !important; /* Allow all touch interactions */
             height: auto !important;
           }
           
           .tp-popular-products-slider .swiper-slide {
-            touch-action: pan-x pinch-zoom !important;
+            touch-action: auto !important; /* Allow all touch interactions */
             height: auto !important;
             width: 100% !important;
             flex-shrink: 0 !important;

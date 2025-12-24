@@ -305,18 +305,18 @@ function FashionTestimonial() {
         /* ===== MOBILE SWIPER FIXES ===== */
         @media (max-width: 768px) {
           .swiper {
-            touch-action: pan-x pinch-zoom !important;
+            touch-action: auto !important; /* Allow all touch interactions */
             overflow: hidden !important;
           }
           
           .swiper-wrapper {
-            touch-action: pan-x pinch-zoom !important;
+            touch-action: auto !important; /* Allow all touch interactions */
             display: flex !important;
             align-items: stretch !important;
           }
           
           .swiper-slide {
-            touch-action: pan-x pinch-zoom !important;
+            touch-action: auto !important; /* Allow all touch interactions */
             height: auto !important;
             display: flex !important;
             flex-direction: column !important;
@@ -324,7 +324,7 @@ function FashionTestimonial() {
           
           /* Ensure proper touch handling */
           .tp-testimonial-slider-active {
-            touch-action: pan-x pinch-zoom !important;
+            touch-action: auto !important; /* Allow all touch interactions */
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
@@ -335,12 +335,12 @@ function FashionTestimonial() {
           }
           
           .tp-testimonial-slider-active .swiper-wrapper {
-            touch-action: pan-x pinch-zoom !important;
+            touch-action: auto !important; /* Allow all touch interactions */
             height: auto !important;
           }
           
           .tp-testimonial-slider-active .swiper-slide {
-            touch-action: pan-x pinch-zoom !important;
+            touch-action: auto !important; /* Allow all touch interactions */
             height: auto !important;
             width: 100% !important;
             flex-shrink: 0 !important;
