@@ -1,9 +1,15 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay, Navigation } from 'swiper/modules';
 import Image from 'next/image';
 import Link from 'next/link';
+
+// Import Swiper styles locally
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/autoplay';
 
 import { useGetTopRatedQuery } from '@/redux/features/newProductApi';
 import ErrorMsg from '@/components/common/error-msg';
@@ -55,15 +61,11 @@ function getImageUrl(item) {
 
 /* ---------------- slider settings ---------------- */
 const SLIDER_SETTINGS = {
-  spaceBetween: 30,
+  spaceBetween: 0, /* No space between slides on mobile */
   slidesPerView: 1,
-  loop: true,
-  loopAdditionalSlides: 2,
-  autoplay: {
-    delay: 4000,
-    disableOnInteraction: false,
-    pauseOnMouseEnter: true,
-  },
+  loop: false,
+  autoplay: false,
+  centeredSlides: true, /* Center slides by default */
   pagination: {
     el: '.featured-pagination',
     clickable: true,
@@ -73,7 +75,7 @@ const SLIDER_SETTINGS = {
     nextEl: '.featured-next',
     prevEl: '.featured-prev',
   },
-  // Enhanced touch/swipe settings for mobile
+  // Enhanced touch/swipe settings
   touchRatio: 1,
   touchAngle: 45,
   simulateTouch: true,
@@ -88,88 +90,64 @@ const SLIDER_SETTINGS = {
   grabCursor: true,
   touchEventsTarget: 'container',
   passiveListeners: false,
+  watchSlidesProgress: true,
+  watchSlidesVisibility: true,
   breakpoints: {
     1400: { 
       slidesPerView: 4, 
       spaceBetween: 30,
+      centeredSlides: false,
       loop: true,
       loopAdditionalSlides: 2,
-      autoplay: {
-        delay: 4000,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true,
-      }
     },
     1200: { 
       slidesPerView: 3, 
       spaceBetween: 25,
+      centeredSlides: false,
       loop: true,
       loopAdditionalSlides: 2,
-      autoplay: {
-        delay: 4000,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true,
-      }
     },
     992: { 
       slidesPerView: 3, 
       spaceBetween: 20,
-      loop: true,
-      loopAdditionalSlides: 2,
-      autoplay: {
-        delay: 4000,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true,
-      }
+      centeredSlides: false,
+      loop: false,
     },
     768: { 
-      slidesPerView: 2, 
-      spaceBetween: 16,
-      loop: true,
-      loopAdditionalSlides: 1,
-      autoplay: {
-        delay: 4500,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true,
-      }
+      slidesPerView: 1,
+      spaceBetween: 0,
+      centeredSlides: true,
+      loop: false,
     },
     576: { 
-      slidesPerView: 1, 
-      spaceBetween: 20,
-      centeredSlides: false,
+      slidesPerView: 1,
+      spaceBetween: 0,
+      centeredSlides: true,
       initialSlide: 0,
-      loop: true,
-      loopAdditionalSlides: 1,
-      autoplay: {
-        delay: 4500,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true,
-      },
+      loop: false,
       freeMode: false,
       watchSlidesProgress: true,
+      watchSlidesVisibility: true,
       touchRatio: 1.2,
       threshold: 3,
       allowTouchMove: true,
       simulateTouch: true,
+      resistanceRatio: 0.5,
     },
     0: { 
-      slidesPerView: 1, 
-      spaceBetween: 20,
-      centeredSlides: false,
+      slidesPerView: 1,
+      spaceBetween: 0,
+      centeredSlides: true,
       initialSlide: 0,
-      loop: true,
-      loopAdditionalSlides: 1,
-      autoplay: {
-        delay: 4500,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true,
-      },
+      loop: false,
       freeMode: false,
       watchSlidesProgress: true,
+      watchSlidesVisibility: true,
       touchRatio: 1.2,
       threshold: 3,
       allowTouchMove: true,
       simulateTouch: true,
+      resistanceRatio: 0.5,
     },
   },
   keyboard: { enabled: true, onlyInViewport: true },
@@ -181,6 +159,19 @@ const CARD_H = 320;
 /* ---------------- component ---------------- */
 const WeeksFeatured = () => {
   const { data: products, isError, isLoading } = useGetTopRatedQuery();
+  const swiperRef = useRef(null);
+
+  // Handle mobile swiper initialization
+  useEffect(() => {
+    const handleResize = () => {
+      if (swiperRef.current && swiperRef.current.swiper) {
+        swiperRef.current.swiper.update();
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   let content = null;
   if (isLoading) content = <HomeTwoFeaturedPrdLoader loading />;
@@ -192,8 +183,12 @@ const WeeksFeatured = () => {
     content = (
       <Swiper 
         {...SLIDER_SETTINGS} 
+        ref={swiperRef}
         modules={[Pagination, Autoplay, Navigation]} 
         className="featured-slider"
+        onSwiper={(swiper) => {
+          swiperRef.current = { swiper };
+        }}
       >
         {items.map((item, idx) => {
           const p = item?.product || item;
@@ -209,10 +204,16 @@ const WeeksFeatured = () => {
             ? categoryData?.name || 'Premium Fabric' 
             : categoryData || 'Premium Fabric';
             
+          // Extract leadtime data
+          const leadtimeData = p?.leadtime;
+          const leadtimeText = Array.isArray(leadtimeData) && leadtimeData.length > 0 
+            ? leadtimeData[0] 
+            : 'In Stock';
+            
           const eager = idx < 3;
 
           return (
-            <SwiperSlide key={pid}>
+            <SwiperSlide key={pid} className="featured-slide">
               <div className="featured-card">
                 {/* Card Top Section */}
                 <div className="card-top">
@@ -229,7 +230,7 @@ const WeeksFeatured = () => {
                         alt={title}
                         width={CARD_W}
                         height={CARD_H}
-                        sizes="(max-width: 768px) 50vw, 320px"
+                        sizes="(max-width: 768px) 100vw, 320px"
                         priority={eager}
                         loading={eager ? 'eager' : 'lazy'}
                         quality={90}
@@ -264,7 +265,7 @@ const WeeksFeatured = () => {
                         <svg className="stat-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
                           <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
-                        <span className="stat-text">In Stock</span>
+                        <span className="stat-text">{leadtimeText}</span>
                       </div>
                     </div>
                   </div>
@@ -396,7 +397,7 @@ const WeeksFeatured = () => {
           gap: 12px;
           padding: 16px 40px;
           background: var(--tp-theme-secondary); /* Theme secondary color */
-          color: var(--tp-common-white); /* White text */
+          color: var(--tp-theme-primary); /* Blue text instead of white */
           border: 2px solid var(--tp-theme-secondary);
           border-radius: 30px;
           font-weight: 600;
@@ -409,10 +410,10 @@ const WeeksFeatured = () => {
 
         .view-all-link:hover {
           background: var(--tp-common-white); /* White background on hover */
-          color: var(--tp-theme-secondary); /* Theme color text on hover */
-          border-color: var(--tp-theme-secondary);
+          color: var(--tp-theme-primary); /* Blue text on hover for consistency */
+          border-color: var(--tp-theme-primary);
           transform: translateY(-2px);
-          box-shadow: 0 8px 24px rgba(214, 167, 75, 0.25);
+          box-shadow: 0 8px 24px rgba(44, 76, 151, 0.25);
         }
 
         .view-all-link:hover .link-arrow {
@@ -432,6 +433,13 @@ const WeeksFeatured = () => {
 
         .featured-slider {
           padding: 10px !important;
+        }
+
+        /* Swiper Slide Styling */
+        .featured-slide {
+          height: auto !important;
+          display: flex !important;
+          flex-direction: column !important;
         }
 
         /* Navigation Arrows */
@@ -580,7 +588,7 @@ const WeeksFeatured = () => {
           display: inline-block;
           padding: 6px 12px;
           background: var(--tp-theme-secondary);
-          color: var(--tp-common-white);
+          color: var(--tp-theme-primary); /* Blue text instead of white */
           font-size: 11px;
           font-weight: 600;
           border-radius: 16px;
@@ -616,7 +624,7 @@ const WeeksFeatured = () => {
         }
 
         .product-title a {
-          color: inherit;
+          color: var(--tp-text-1) !important; /* Ensure dark text instead of inherit */
           text-decoration: none;
           transition: color 0.2s ease;
         }
@@ -649,7 +657,7 @@ const WeeksFeatured = () => {
           font-family: var(--tp-ff-roboto);
         }
 
-        /* Quick Action Button */
+        /* Quick Action Button - REVERSED COLORS */
         .quick-action {
           border-top: 1px solid var(--tp-grey-2);
           padding-top: 18px;
@@ -662,9 +670,9 @@ const WeeksFeatured = () => {
           gap: 8px;
           width: 100%;
           padding: 10px;
-          background: var(--tp-theme-primary); /* Blue background */
-          color: var(--tp-common-white); /* White text */
-          border: 1px solid var(--tp-theme-primary);
+          background: var(--tp-common-white); /* White background by default */
+          color: var(--tp-theme-primary); /* Blue text by default */
+          border: 2px solid var(--tp-theme-primary); /* Blue border */
           border-radius: 8px;
           font-weight: 600;
           font-size: 14px;
@@ -674,8 +682,8 @@ const WeeksFeatured = () => {
         }
 
         .quick-view-btn:hover {
-          background: var(--tp-common-white); /* White background on hover */
-          color: var(--tp-theme-primary); /* Blue text on hover */
+          background: var(--tp-theme-primary); /* Blue background on hover */
+          color: var(--tp-common-white); /* White text on hover */
           border-color: var(--tp-theme-primary);
           transform: translateY(-2px);
         }
@@ -704,35 +712,75 @@ const WeeksFeatured = () => {
         /* ===== MOBILE SWIPER FIXES ===== */
         @media (max-width: 768px) {
           .swiper {
-            touch-action: pan-y pinch-zoom !important;
+            touch-action: pan-x pinch-zoom !important;
+            overflow: hidden !important;
           }
           
           .swiper-wrapper {
-            touch-action: pan-y pinch-zoom !important;
+            touch-action: pan-x pinch-zoom !important;
+            display: flex !important;
+            align-items: stretch !important;
           }
           
           .swiper-slide {
-            touch-action: pan-y pinch-zoom !important;
+            touch-action: pan-x pinch-zoom !important;
+            height: auto !important;
+            display: flex !important;
+            flex-direction: column !important;
           }
           
           /* Ensure proper touch handling */
-          .featured-slider,
-          .tp-popular-products-slider {
-            touch-action: pan-y pinch-zoom !important;
+          .featured-slider {
+            touch-action: pan-x pinch-zoom !important;
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
+            overflow: hidden !important;
+            width: 100% !important;
           }
           
-          .featured-slider .swiper-wrapper,
-          .tp-popular-products-slider .swiper-wrapper {
-            touch-action: pan-y pinch-zoom !important;
+          .featured-slider .swiper-wrapper {
+            touch-action: pan-x pinch-zoom !important;
+            height: auto !important;
           }
           
-          .featured-slider .swiper-slide,
-          .tp-popular-products-slider .swiper-slide {
-            touch-action: pan-y pinch-zoom !important;
+          .featured-slider .swiper-slide {
+            touch-action: pan-x pinch-zoom !important;
+            height: auto !important;
+            width: 100% !important;
+            flex-shrink: 0 !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+          }
+          
+          /* Fix card display on mobile */
+          .featured-card {
+            width: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
+            display: flex !important;
+            flex-direction: column !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            margin: 0 !important; /* Remove any margin */
+          }
+          
+          .card-image-container {
+            width: 100% !important;
+            height: auto !important;
+            aspect-ratio: 1 !important;
+          }
+          
+          .card-image {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: contain !important;
+          }
+          
+          .card-bottom {
+            width: 100% !important;
+            flex: 1 !important;
           }
         }
 
@@ -831,23 +879,25 @@ const WeeksFeatured = () => {
           
           .featured-card {
             border-radius: 14px;
-            width: 280px; /* Fixed width for horizontal scroll */
-            flex-shrink: 0;
-            margin: 0;
+            width: 100%;
+            max-width: 320px; /* Fixed max width */
+            margin: 0 auto; /* Center the card */
+            min-height: 500px;
           }
           
           .card-image-container {
             aspect-ratio: 1;
+            min-height: 300px;
           }
           
           .product-title {
-            font-size: 15px;
-            margin-bottom: 12px;
+            font-size: 16px;
+            margin-bottom: 15px;
           }
           
           .quick-view-btn {
-            padding: 9px;
-            font-size: 13px;
+            padding: 12px;
+            font-size: 14px;
           }
           
           .view-all-link {
@@ -856,38 +906,54 @@ const WeeksFeatured = () => {
             border-radius: 30px;
           }
           
-          /* Hide navigation arrows on mobile */
+          /* Show navigation arrows on mobile */
           .featured-nav-wrapper {
-            display: none;
+            display: block;
           }
           
-          /* Instagram-style horizontal scroll */
+          .featured-nav {
+            display: flex;
+          }
+          
+          /* Adjust arrow positioning for mobile */
+          .featured-prev {
+            left: 15px;
+          }
+
+          .featured-next {
+            right: 15px;
+          }
+          
+          /* SINGLE CARD MOBILE LAYOUT */
           .featured-slider-wrapper {
             padding: 10px 0 50px;
             margin: 0;
-            overflow: visible;
+            position: relative;
           }
           
           .featured-slider {
-            overflow: visible !important;
-            padding: 10px 15px !important;
+            overflow: hidden !important;
+            padding: 10px 20px !important;
+            width: 100% !important;
           }
           
           .featured-slider .swiper-wrapper {
             display: flex !important;
-            flex-direction: row !important;
-            width: auto !important;
+            align-items: center !important;
           }
           
           .featured-slider .swiper-slide {
-            width: 280px !important;
-            margin-right: 15px !important;
+            width: 100% !important;
+            flex-shrink: 0 !important;
+            display: flex !important;
+            justify-content: center !important;
             padding: 0 !important;
-            flex-shrink: 0;
           }
           
-          .featured-slider .swiper-slide:last-child {
-            margin-right: 0 !important;
+          /* Ensure only one card is visible */
+          .featured-slider .swiper-slide .featured-card {
+            width: 100% !important;
+            max-width: 320px !important;
           }
         }
 
@@ -906,40 +972,39 @@ const WeeksFeatured = () => {
           }
           
           .featured-card {
-            width: 260px; /* Slightly smaller on mobile */
+            max-width: 300px; /* Slightly smaller on very small screens */
+            min-height: 470px;
           }
           
-          .featured-slider-wrapper {
-            margin: 0;
-            padding: 5px 0 35px;
+          .featured-slider {
+            padding: 10px 15px !important;
           }
           
-          .featured-slider .swiper-slide {
-            width: 260px !important;
-            margin-right: 12px !important;
+          .card-image-container {
+            min-height: 270px;
           }
           
           .card-top,
           .card-bottom {
-            padding: 14px;
-          }
-          
-          .category-tag {
-            top: 14px;
-            left: 14px;
-          }
-          
-          .collection-badge {
-            bottom: 14px;
-            right: 14px;
-          }
-          
-          .card-image {
             padding: 16px;
           }
           
+          .category-tag {
+            top: 16px;
+            left: 16px;
+          }
+          
+          .collection-badge {
+            bottom: 16px;
+            right: 16px;
+          }
+          
+          .card-image {
+            padding: 20px;
+          }
+          
           .product-title {
-            font-size: 14px;
+            font-size: 15px;
           }
           
           .stat-text {

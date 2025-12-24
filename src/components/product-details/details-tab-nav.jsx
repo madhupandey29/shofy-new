@@ -620,13 +620,20 @@ export default function DetailsTabNav({ product = {} }) {
           padding: 32px 0;
         }
 
+        .hero-section .row {
+          align-items: flex-start;
+        }
+
         .description-panel, .faq-panel {
           background: var(--tp-common-white);
           border-radius: 12px;
           padding: 24px;
           box-shadow: 0 2px 8px rgba(15, 34, 53, 0.06);
           border: 1px solid var(--tp-grey-2);
-          height: 100%;
+        }
+
+        .faq-panel {
+          height: fit-content;
         }
 
         .panel-header {
@@ -690,6 +697,8 @@ export default function DetailsTabNav({ product = {} }) {
           border-radius: 8px;
           overflow: hidden;
           border: 1px solid var(--tp-grey-2);
+          width: 100%;
+          table-layout: auto;
         }
 
         .spec-row-compact {

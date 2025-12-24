@@ -228,6 +228,7 @@ const DetailsWrapper = ({ productItem = {} }) => {
     description,
     status,
     slug,
+    leadtime,
 
     structureId,
     contentId,
@@ -240,6 +241,11 @@ const DetailsWrapper = ({ productItem = {} }) => {
 
     gsm, oz, cm, inch, width,
   } = productItem;
+
+  // Extract leadtime for display
+  const leadtimeDisplay = Array.isArray(leadtime) && leadtime.length > 0 
+    ? leadtime[0] 
+    : status || 'In Stock';
 
   /* ✅ Fetch product details for shortProductDescription (and other fields if needed) */
   const [productFull, setProductFull] = useState(null);
@@ -293,7 +299,7 @@ const DetailsWrapper = ({ productItem = {} }) => {
       <div className="product-header">
         <div className="product-category">
           <span className="category-badge">{category?.name || newCategoryId?.name}</span>
-          <span className="stock-badge">{status}</span>
+          <span className="stock-badge">{leadtimeDisplay}</span>
         </div>
         
         <h1 className="product-title" dangerouslySetInnerHTML={{ __html: highlight(title) }} />
@@ -526,11 +532,13 @@ const DetailsWrapper = ({ productItem = {} }) => {
 
         .action-btn.secondary {
           background: var(--tp-theme-secondary);
-          color: var(--tp-common-white);
+          color: var(--tp-theme-primary); /* Blue text instead of white */
         }
 
         .action-btn.secondary:hover {
-          background: #c19940;
+          background: var(--tp-common-white);
+          color: var(--tp-theme-primary);
+          border: 2px solid var(--tp-theme-primary);
           transform: translateY(-1px);
         }
 
@@ -604,6 +612,28 @@ const DetailsWrapper = ({ productItem = {} }) => {
           .fact-value {
             font-size: 12px;
           }
+
+          /* Compact action buttons for mobile */
+          .compact-actions-row {
+            margin-top: 10px;
+            padding-top: 10px;
+            gap: 6px;
+          }
+
+          .view-more-btn-compact {
+            padding: 8px 12px;
+            font-size: 11px;
+          }
+
+          .view-more-btn-compact i {
+            font-size: 12px;
+          }
+
+          .wishlist-btn-compact {
+            width: 40px;
+            height: 40px;
+            font-size: 14px;
+          }
         }
 
         @media (max-width: 480px) {
@@ -642,6 +672,28 @@ const DetailsWrapper = ({ productItem = {} }) => {
           
           .fact-value {
             font-size: 11px;
+          }
+
+          /* Very small mobile compact actions */
+          .compact-actions-row {
+            margin-top: 8px;
+            padding-top: 8px;
+            gap: 5px;
+          }
+
+          .view-more-btn-compact {
+            padding: 6px 10px;
+            font-size: 10px;
+          }
+
+          .view-more-btn-compact i {
+            font-size: 11px;
+          }
+
+          .wishlist-btn-compact {
+            width: 36px;
+            height: 36px;
+            font-size: 13px;
           }
         }
       `}</style>

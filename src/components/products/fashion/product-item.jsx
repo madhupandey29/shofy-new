@@ -198,7 +198,7 @@ const ProductItem = ({ product, index = 0 }) => {
   const finishVal = toText(pick(product?.finish, product?.subfinish?.name, product?.finishName, seoDoc?.finish));
   const structureVal = toText(pick(product?.structure, product?.substructure?.name, product?.structureName, seoDoc?.structure));
   const motifVal = toText(pick(product?.motif, product?.motifName, seoDoc?.motif));
-  const leadTimeVal = toText(pick(product?.leadTime, product?.lead_time, seoDoc?.leadTime));
+  const leadTimeVal = toText(pick(product?.leadtime, product?.leadTime, product?.lead_time, seoDoc?.leadTime));
 
   const details = uniq(
     [fabricTypeVal, contentVal, weightVal, designVal, colorsVal, widthVal, finishVal, structureVal, motifVal, leadTimeVal]

@@ -84,6 +84,14 @@ export default function ProductModal() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Redirect to product page on mobile when modal opens
+  useEffect(() => {
+    if (isModalOpen && isMobile && productItem?.slug) {
+      dispatch(handleModalClose());
+      router.push(`/fabric/${productItem.slug}`);
+    }
+  }, [isModalOpen, isMobile, productItem?.slug, dispatch, router]);
+
   const normalized = useMemo(() => {
     const p = productItem || {};
     return {
@@ -119,7 +127,7 @@ export default function ProductModal() {
 
   const handleImageActive = (item) => setActiveImg(item.img);
 
-  if (!normalized || !isModalOpen) return null;
+  if (!normalized || !isModalOpen || isMobile) return null;
 
   const modalKey = `${normalized._id || normalized.slug || 'item'}-${nonce ?? 0}`;
 

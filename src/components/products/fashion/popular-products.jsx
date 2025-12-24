@@ -1,9 +1,15 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay, Navigation } from 'swiper/modules';
+
+// Import Swiper styles locally
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/autoplay';
 
 import { useGetPopularNewProductsQuery } from '@/redux/features/newProductApi';
 import ErrorMsg from '@/components/common/error-msg';
@@ -88,16 +94,11 @@ function getItemImage(item) {
 
 /* ---------- slider options ---------- */
 const SLIDER_OPTS = {
-  spaceBetween: 24,
-  loop: true,
-  loopAdditionalSlides: 2,
+  spaceBetween: 0, /* No space between slides on mobile */
+  loop: false,
   speed: 400,
-  centeredSlides: false,
-  autoplay: {
-    delay: 3500,
-    disableOnInteraction: false,
-    pauseOnMouseEnter: true,
-  },
+  centeredSlides: true, /* Center slides by default */
+  autoplay: false,
   pagination: {
     el: '.swiper-pagination',
     clickable: true,
@@ -106,7 +107,7 @@ const SLIDER_OPTS = {
     nextEl: '.tp-popular-next',
     prevEl: '.tp-popular-prev',
   },
-  // Enhanced touch/swipe settings for mobile
+  // Enhanced touch/swipe settings
   touchRatio: 1,
   touchAngle: 45,
   simulateTouch: true,
@@ -121,88 +122,64 @@ const SLIDER_OPTS = {
   grabCursor: true,
   touchEventsTarget: 'container',
   passiveListeners: false,
+  watchSlidesProgress: true,
+  watchSlidesVisibility: true,
   breakpoints: {
     1400: { 
       slidesPerView: 5, 
       spaceBetween: 24,
+      centeredSlides: false,
       loop: true,
       loopAdditionalSlides: 2,
-      autoplay: {
-        delay: 3500,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true,
-      }
     },
     1200: { 
       slidesPerView: 4, 
       spaceBetween: 20,
+      centeredSlides: false,
       loop: true,
       loopAdditionalSlides: 2,
-      autoplay: {
-        delay: 3500,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true,
-      }
     },
     992: { 
       slidesPerView: 3, 
       spaceBetween: 20,
-      loop: true,
-      loopAdditionalSlides: 2,
-      autoplay: {
-        delay: 3500,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true,
-      }
+      centeredSlides: false,
+      loop: false,
     },
     768: { 
-      slidesPerView: 2, 
-      spaceBetween: 16,
-      loop: true,
-      loopAdditionalSlides: 1,
-      autoplay: {
-        delay: 4000,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true,
-      }
+      slidesPerView: 1,
+      spaceBetween: 0,
+      centeredSlides: true,
+      loop: false,
     },
     576: { 
-      slidesPerView: 1, 
-      spaceBetween: 20,
-      centeredSlides: false,
+      slidesPerView: 1,
+      spaceBetween: 0,
+      centeredSlides: true,
       initialSlide: 0,
-      loop: true,
-      loopAdditionalSlides: 1,
-      autoplay: {
-        delay: 4000,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true,
-      },
+      loop: false,
       freeMode: false,
       watchSlidesProgress: true,
+      watchSlidesVisibility: true,
       touchRatio: 1.2,
       threshold: 3,
       allowTouchMove: true,
       simulateTouch: true,
+      resistanceRatio: 0.5,
     },
     0: { 
-      slidesPerView: 1, 
-      spaceBetween: 20,
-      centeredSlides: false,
+      slidesPerView: 1,
+      spaceBetween: 0,
+      centeredSlides: true,
       initialSlide: 0,
-      loop: true,
-      loopAdditionalSlides: 1,
-      autoplay: {
-        delay: 4000,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true,
-      },
+      loop: false,
       freeMode: false,
       watchSlidesProgress: true,
+      watchSlidesVisibility: true,
       touchRatio: 1.2,
       threshold: 3,
       allowTouchMove: true,
       simulateTouch: true,
+      resistanceRatio: 0.5,
     },
   },
   keyboard: { enabled: true, onlyInViewport: true },
@@ -213,6 +190,19 @@ const CARD_H = 300;
 
 export default function PopularProducts() {
   const { data, isError, isLoading } = useGetPopularNewProductsQuery();
+  const swiperRef = useRef(null);
+
+  // Handle mobile swiper initialization
+  useEffect(() => {
+    const handleResize = () => {
+      if (swiperRef.current && swiperRef.current.swiper) {
+        swiperRef.current.swiper.update();
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   let carousel = <ErrorMsg msg="No Products found!" />;
   if (isLoading) carousel = <HomeTwoPopularPrdLoader loading />;
@@ -230,8 +220,12 @@ export default function PopularProducts() {
     carousel = (
       <Swiper
         {...SLIDER_OPTS}
+        ref={swiperRef}
         modules={[Pagination, Autoplay, Navigation]}
         className="tp-popular-products-slider"
+        onSwiper={(swiper) => {
+          swiperRef.current = { swiper };
+        }}
       >
         {items.map((seoDoc, idx) => {
           const p = seoDoc.product || seoDoc;
@@ -243,7 +237,7 @@ export default function PopularProducts() {
           const eager = idx < 3;
 
           return (
-            <SwiperSlide key={seoDoc._id || pid || idx}>
+            <SwiperSlide key={seoDoc._id || pid || idx} className="tp-popular-slide">
               <div className="tp-popular-product-card">
                 {/* Product Image */}
                 <div className="tp-popular-product-img-wrapper">
@@ -258,7 +252,7 @@ export default function PopularProducts() {
                       alt={pname}
                       width={CARD_W}
                       height={CARD_H}
-                      sizes="(max-width: 768px) 50vw, 260px"
+                      sizes="(max-width: 768px) 100vw, 260px"
                       priority={eager}
                       loading={eager ? 'eager' : 'lazy'}
                       quality={80}
@@ -418,6 +412,13 @@ export default function PopularProducts() {
 
         .tp-popular-products-slider {
           padding: 10px !important;
+        }
+
+        /* Swiper Slide Styling */
+        .tp-popular-slide {
+          height: auto !important;
+          display: flex !important;
+          flex-direction: column !important;
         }
 
         /* Navigation Arrows */
@@ -605,7 +606,7 @@ export default function PopularProducts() {
         }
 
         .tp-popular-product-title a {
-          color: inherit;
+          color: var(--tp-text-1) !important; /* Ensure dark text instead of inherit */
           text-decoration: none;
           transition: color 0.2s ease;
         }
@@ -618,7 +619,7 @@ export default function PopularProducts() {
           margin-top: auto;
         }
 
-        /* Button Styling */
+        /* Button Styling - REVERSED COLORS */
         .tp-btn.tp-btn-popular {
           display: flex;
           align-items: center;
@@ -626,9 +627,9 @@ export default function PopularProducts() {
           gap: 10px;
           width: 100%;
           padding: 14px;
-          background: var(--tp-theme-primary);
-          color: var(--tp-common-white);
-          border: 1px solid var(--tp-theme-primary);
+          background: var(--tp-common-white); /* White background by default */
+          color: var(--tp-theme-primary); /* Blue text by default */
+          border: 2px solid var(--tp-theme-primary); /* Blue border */
           border-radius: 10px;
           font-weight: 600;
           font-size: 14px;
@@ -640,8 +641,8 @@ export default function PopularProducts() {
         }
 
         .tp-btn.tp-btn-popular:hover {
-          background: var(--tp-common-white);
-          color: var(--tp-theme-primary);
+          background: var(--tp-theme-primary); /* Blue background on hover */
+          color: var(--tp-common-white); /* White text on hover */
           box-shadow: 0 4px 16px rgba(44, 76, 151, 0.2);
         }
 
@@ -661,7 +662,7 @@ export default function PopularProducts() {
           padding: 16px 40px;
           background: var(--tp-theme-secondary); /* Theme secondary color */
           border: 2px solid var(--tp-theme-secondary);
-          color: var(--tp-common-white); /* White text */
+          color: var(--tp-theme-primary); /* Blue text instead of white */
           border-radius: 30px;
           font-weight: 600;
           font-size: 15px;
@@ -672,10 +673,10 @@ export default function PopularProducts() {
 
         .tp-btn.tp-btn-border.tp-btn-shop-all:hover {
           background: var(--tp-common-white); /* White background on hover */
-          color: var(--tp-theme-secondary); /* Theme color text on hover */
-          border-color: var(--tp-theme-secondary);
+          color: var(--tp-theme-primary); /* Blue text on hover for consistency */
+          border-color: var(--tp-theme-primary);
           transform: translateY(-2px);
-          box-shadow: 0 8px 24px rgba(214, 167, 75, 0.25);
+          box-shadow: 0 8px 24px rgba(44, 76, 151, 0.25);
         }
 
         .tp-btn.tp-btn-border.tp-btn-shop-all:hover .tp-btn-shop-arrow {
@@ -702,32 +703,75 @@ export default function PopularProducts() {
         /* ===== MOBILE SWIPER FIXES ===== */
         @media (max-width: 768px) {
           .swiper {
-            touch-action: pan-y pinch-zoom !important;
+            touch-action: pan-x pinch-zoom !important;
+            overflow: hidden !important;
           }
           
           .swiper-wrapper {
-            touch-action: pan-y pinch-zoom !important;
+            touch-action: pan-x pinch-zoom !important;
+            display: flex !important;
+            align-items: stretch !important;
           }
           
           .swiper-slide {
-            touch-action: pan-y pinch-zoom !important;
+            touch-action: pan-x pinch-zoom !important;
+            height: auto !important;
+            display: flex !important;
+            flex-direction: column !important;
           }
           
           /* Ensure proper touch handling */
           .tp-popular-products-slider {
-            touch-action: pan-y pinch-zoom !important;
+            touch-action: pan-x pinch-zoom !important;
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
+            overflow: hidden !important;
+            width: 100% !important;
           }
           
           .tp-popular-products-slider .swiper-wrapper {
-            touch-action: pan-y pinch-zoom !important;
+            touch-action: pan-x pinch-zoom !important;
+            height: auto !important;
           }
           
           .tp-popular-products-slider .swiper-slide {
-            touch-action: pan-y pinch-zoom !important;
+            touch-action: pan-x pinch-zoom !important;
+            height: auto !important;
+            width: 100% !important;
+            flex-shrink: 0 !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+          }
+          
+          /* Fix card display on mobile */
+          .tp-popular-product-card {
+            width: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
+            display: flex !important;
+            flex-direction: column !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            margin: 0 !important; /* Remove any margin */
+          }
+          
+          .tp-popular-product-img-wrapper {
+            width: 100% !important;
+            height: auto !important;
+            aspect-ratio: 1 !important;
+          }
+          
+          .tp-popular-product-img {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: contain !important;
+          }
+          
+          .tp-popular-product-info {
+            width: 100% !important;
+            flex: 1 !important;
           }
         }
 
@@ -776,13 +820,15 @@ export default function PopularProducts() {
           
           .tp-popular-product-card {
             border-radius: 10px;
-            width: 280px; /* Fixed width for horizontal scroll */
-            flex-shrink: 0;
-            margin: 0;
+            width: 100%;
+            max-width: 320px; /* Fixed max width */
+            margin: 0 auto; /* Center the card */
+            min-height: 450px;
           }
           
           .tp-popular-product-img-wrapper {
             aspect-ratio: 1/1;
+            min-height: 280px;
           }
           
           .tp-btn.tp-btn-border.tp-btn-shop-all {
@@ -790,38 +836,54 @@ export default function PopularProducts() {
             font-size: 14px;
           }
           
-          /* Hide navigation arrows on mobile */
+          /* Show navigation arrows on mobile */
           .tp-popular-nav-wrapper {
-            display: none;
+            display: block;
           }
           
-          /* Instagram-style horizontal scroll */
+          .tp-popular-nav {
+            display: flex;
+          }
+          
+          /* Adjust arrow positioning for mobile */
+          .tp-popular-prev {
+            left: 15px;
+          }
+
+          .tp-popular-next {
+            right: 15px;
+          }
+          
+          /* SINGLE CARD MOBILE LAYOUT */
           .tp-popular-products-slider-wrapper {
             padding: 20px 0 40px;
             margin: 0;
-            overflow: visible;
+            position: relative;
           }
           
           .tp-popular-products-slider {
-            overflow: visible !important;
-            padding: 10px 15px !important;
+            overflow: hidden !important;
+            padding: 10px 20px !important;
+            width: 100% !important;
           }
           
           .tp-popular-products-slider .swiper-wrapper {
             display: flex !important;
-            flex-direction: row !important;
-            width: auto !important;
+            align-items: center !important;
           }
           
           .tp-popular-products-slider .swiper-slide {
-            width: 280px !important;
-            margin-right: 15px !important;
+            width: 100% !important;
+            flex-shrink: 0 !important;
+            display: flex !important;
+            justify-content: center !important;
             padding: 0 !important;
-            flex-shrink: 0;
           }
           
-          .tp-popular-products-slider .swiper-slide:last-child {
-            margin-right: 0 !important;
+          /* Ensure only one card is visible */
+          .tp-popular-products-slider .swiper-slide .tp-popular-product-card {
+            width: 100% !important;
+            max-width: 320px !important;
           }
         }
 
@@ -831,17 +893,21 @@ export default function PopularProducts() {
           }
           
           .tp-popular-product-card {
-            width: 260px; /* Slightly smaller on mobile */
+            max-width: 300px; /* Slightly smaller on very small screens */
+            min-height: 420px;
           }
           
-          .tp-popular-products-slider .swiper-slide {
-            width: 260px !important;
-            margin-right: 12px !important;
+          .tp-popular-products-slider {
+            padding: 10px 15px !important;
+          }
+          
+          .tp-popular-product-img-wrapper {
+            min-height: 250px;
           }
           
           .tp-popular-product-title {
-            font-size: 15px;
-            min-height: 45px;
+            font-size: 16px;
+            min-height: 50px;
           }
           
           .tp-popular-product-view {
@@ -850,8 +916,8 @@ export default function PopularProducts() {
           }
           
           .tp-btn.tp-btn-popular {
-            padding: 11px;
-            font-size: 12px;
+            padding: 14px;
+            font-size: 14px;
           }
           
           .tp-btn.tp-btn-border.tp-btn-shop-all {
@@ -863,13 +929,13 @@ export default function PopularProducts() {
           }
           
           .tp-popular-badge {
-            top: 14px;
-            left: 14px;
+            top: 16px;
+            left: 16px;
           }
           
           .tp-popular-badge-text {
-            font-size: 10px;
-            padding: 5px 10px;
+            font-size: 11px;
+            padding: 6px 12px;
           }
         }
 

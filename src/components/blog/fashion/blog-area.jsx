@@ -106,7 +106,7 @@ export default function BlogArea() {
           gap: 12px;
           padding: 16px 40px;
           background: var(--tp-theme-secondary); /* Theme secondary color */
-          color: var(--tp-common-white); /* White text */
+          color: var(--tp-theme-primary); /* Blue text instead of white */
           border: 2px solid var(--tp-theme-secondary);
           border-radius: 30px;
           font-weight: 600;
@@ -119,10 +119,10 @@ export default function BlogArea() {
 
         .tp-btn.tp-btn-blog-discover:hover {
           background: var(--tp-common-white); /* White background on hover */
-          color: var(--tp-theme-secondary); /* Theme color text on hover */
-          border-color: var(--tp-theme-secondary);
+          color: var(--tp-theme-primary); /* Blue text on hover for consistency */
+          border-color: var(--tp-theme-primary);
           transform: translateY(-2px);
-          box-shadow: 0 8px 24px rgba(214, 167, 75, 0.25);
+          box-shadow: 0 8px 24px rgba(44, 76, 151, 0.25);
         }
 
         .tp-btn.tp-btn-blog-discover:hover .tp-btn-blog-arrow {

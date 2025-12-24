@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, A11y, Keyboard, Autoplay } from 'swiper/modules';
@@ -19,17 +19,61 @@ const DATA = [
 const slider_setting = {
   slidesPerView: 1,
   spaceBetween: 14,
+  loop: false, // Disable loop to prevent blank slides
   pagination: { el: '.tp-testimonial-slider-dot', clickable: true },
   navigation: { nextEl: '.tp-testimonial-slider-button-next', prevEl: '.tp-testimonial-slider-button-prev' },
   keyboard: { enabled: true, onlyInViewport: true },
   autoplay: { delay: 5200, disableOnInteraction: false, pauseOnMouseEnter: true },
   a11y: { enabled: true },
-  breakpoints: { 640: { slidesPerView: 2, spaceBetween: 14 }, 1024: { slidesPerView: 3, spaceBetween: 16 } }
+  // Enhanced touch/swipe settings
+  touchRatio: 1,
+  touchAngle: 45,
+  simulateTouch: true,
+  allowTouchMove: true,
+  touchStartPreventDefault: false,
+  touchMoveStopPropagation: false,
+  resistanceRatio: 0.85,
+  threshold: 5,
+  longSwipesRatio: 0.5,
+  longSwipesMs: 300,
+  followFinger: true,
+  grabCursor: true,
+  touchEventsTarget: 'container',
+  passiveListeners: false,
+  watchSlidesProgress: true,
+  watchSlidesVisibility: true,
+  breakpoints: { 
+    640: { 
+      slidesPerView: 2, 
+      spaceBetween: 14,
+      loop: false,
+    }, 
+    1024: { 
+      slidesPerView: 3, 
+      spaceBetween: 16,
+      loop: true,
+      loopAdditionalSlides: 1,
+    } 
+  }
 };
 
 const nonEmpty = (v) => (Array.isArray(v) ? v.length > 0 : v !== undefined && v !== null && String(v).trim() !== '');
 
 function FashionTestimonial() {
+  const swiperRef = useRef(null);
+
+  // Handle mobile swiper initialization
+  useEffect(() => {
+    const handleResize = () => {
+      if (swiperRef.current && swiperRef.current.swiper) {
+        swiperRef.current.swiper.update();
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const dotsStyle = {
     '--swiper-pagination-color': 'var(--tp-theme-secondary)',
     '--swiper-pagination-bullet-inactive-color': 'rgba(255,255,255,0.35)',
@@ -54,12 +98,16 @@ function FashionTestimonial() {
             <div className="p-relative">
               <Swiper
                 {...slider_setting}
+                ref={swiperRef}
                 modules={[Navigation, Pagination, A11y, Keyboard, Autoplay]}
                 className="tp-testimonial-slider-active"
                 aria-label="Anonymous Testimonial Slider"
+                onSwiper={(swiper) => {
+                  swiperRef.current = { swiper };
+                }}
               >
                 {DATA.map((item, idx) => (
-                  <SwiperSlide key={item.id} className="slide-auto" aria-label={`Testimonial ${idx + 1}`}>
+                  <SwiperSlide key={item.id} className="slide-auto testimonial-slide" aria-label={`Testimonial ${idx + 1}`}>
                     <article className="age-card h-eq">
                       {/* top row */}
                       <div className="age-top">
@@ -148,6 +196,13 @@ function FashionTestimonial() {
         .slide-auto{ height:auto; }
         :global(.tp-testimonial-slider-active .swiper-wrapper){ align-items:stretch; }
         .h-eq{ display:flex; flex-direction:column; height:100%; }
+
+        /* Testimonial Slide Styling */
+        .testimonial-slide {
+          height: auto !important;
+          display: flex !important;
+          flex-direction: column !important;
+        }
 
         /* ===== Card (refined) ===== */
         .age-card{
@@ -245,6 +300,89 @@ function FashionTestimonial() {
           .age-card{ padding:16px 14px; }
           .age-quote{ min-height:60px; font-size:13.5px; }
           .age-metric-grid{ grid-template-columns:1fr; gap:8px; }
+        }
+
+        /* ===== MOBILE SWIPER FIXES ===== */
+        @media (max-width: 768px) {
+          .swiper {
+            touch-action: pan-x pinch-zoom !important;
+            overflow: hidden !important;
+          }
+          
+          .swiper-wrapper {
+            touch-action: pan-x pinch-zoom !important;
+            display: flex !important;
+            align-items: stretch !important;
+          }
+          
+          .swiper-slide {
+            touch-action: pan-x pinch-zoom !important;
+            height: auto !important;
+            display: flex !important;
+            flex-direction: column !important;
+          }
+          
+          /* Ensure proper touch handling */
+          .tp-testimonial-slider-active {
+            touch-action: pan-x pinch-zoom !important;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            overflow: hidden !important;
+            width: 100% !important;
+            padding: 10px 20px !important;
+          }
+          
+          .tp-testimonial-slider-active .swiper-wrapper {
+            touch-action: pan-x pinch-zoom !important;
+            height: auto !important;
+          }
+          
+          .tp-testimonial-slider-active .swiper-slide {
+            touch-action: pan-x pinch-zoom !important;
+            height: auto !important;
+            width: 100% !important;
+            flex-shrink: 0 !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+          }
+          
+          /* Fix card display on mobile */
+          .age-card {
+            width: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
+            display: flex !important;
+            flex-direction: column !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+          }
+          
+          /* Fix container layout */
+          .p-relative {
+            padding: 0;
+            margin: 0;
+          }
+          
+          /* Adjust arrow positioning */
+          .tp-testimonial-slider-button-prev.age-arrow {
+            left: 15px;
+          }
+          
+          .tp-testimonial-slider-button-next.age-arrow {
+            right: 15px;
+          }
+        }
+        
+        @media (max-width: 576px) {
+          .tp-testimonial-slider-active {
+            padding: 10px 15px !important;
+          }
+          
+          .tp-testimonial-slider-active .swiper-slide {
+            width: 100% !important;
+          }
         }
       `}</style>
     </section>
