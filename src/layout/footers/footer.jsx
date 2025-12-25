@@ -63,9 +63,7 @@ const cleanStr = (s) =>
 const digitsOnly = (s) => cleanStr(s).replace(/[^\d]/g, "");
 
 const mapLink = (address) =>
-  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-    address
-  )}`;
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 
 const gmailCompose = (to) =>
   `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}`;
@@ -101,9 +99,7 @@ const Footer = () => {
   const [newsletterEmail, setNewsletterEmail] = React.useState("");
 
   const office =
-    data?.success && Array.isArray(data?.data) && data.data.length
-      ? data.data[0]
-      : null;
+    data?.success && Array.isArray(data?.data) && data.data.length ? data.data[0] : null;
 
   const officeAddress =
     cleanStr(office?.companyAddress) ||
@@ -131,7 +127,6 @@ const Footer = () => {
     { title: "UAE Office Address", address: "GSK Worldwide FZE, Ajman Free Zone, UAE" },
   ];
 
-  // ✅ Socials (values come from API)
   const socials = React.useMemo(() => {
     const items = [
       { key: "facebook", url: office?.facebook, label: "Facebook", icon: <FaFacebookF size={18} /> },
@@ -139,7 +134,7 @@ const Footer = () => {
       { key: "linkedin", url: office?.linkedin, label: "LinkedIn", icon: <FaLinkedinIn size={18} /> },
       { key: "twitter", url: office?.twitter, label: "X", icon: <FaXTwitter size={18} /> },
       { key: "youtube", url: office?.youtube, label: "YouTube", icon: <FaYoutube size={20} /> },
-      { key: "pinterest", url: office?.pinterest, label: "Pinterest", icon: <FaPinterestP size={18} /> }, // ✅ NEW
+      { key: "pinterest", url: office?.pinterest, label: "Pinterest", icon: <FaPinterestP size={18} /> },
     ].filter((x) => Boolean(x.url));
 
     return items.slice(0, 6);
@@ -184,11 +179,9 @@ const Footer = () => {
   return (
     <footer aria-label="Site Footer" className="age-footer">
       <div className="age-footer__gradient">
-        {/* ===== TOP ===== */}
         <div className="age-footer__top">
           <div className="age-container">
             <div className="age-grid" role="list">
-              {/* Addresses board */}
               <div className="age-col" role="listitem">
                 <div className="age-widget">
                   <div className="age-addressBoard" aria-label="Company addresses">
@@ -219,7 +212,6 @@ const Footer = () => {
                 </div>
               </div>
 
-              {/* My Account */}
               <div className="age-col" role="listitem">
                 <div className="age-widget">
                   <h4 className="age-title">My Account</h4>
@@ -234,7 +226,6 @@ const Footer = () => {
                 </div>
               </div>
 
-              {/* Information */}
               <div className="age-col" role="listitem">
                 <div className="age-widget">
                   <h4 className="age-title">Information</h4>
@@ -249,12 +240,10 @@ const Footer = () => {
                 </div>
               </div>
 
-              {/* Talk To Us */}
               <div className="age-col" role="listitem">
                 <div className="age-widget">
                   <h4 className="age-title">Talk To Us</h4>
 
-                  {/* Newsletter */}
                   <div className="age-newsMini">
                     <p className="age-newsDesc">
                       Subscribe to our newsletter to get the latest news and offers.
@@ -281,7 +270,6 @@ const Footer = () => {
                     </form>
                   </div>
 
-                  {/* Phone / Email */}
                   <div className="age-talk">
                     {!!phone1Digits && (
                       <div className="age-talkRow">
@@ -315,7 +303,6 @@ const Footer = () => {
                     </div>
                   </div>
 
-                  {/* HQ quick line (clickable map) */}
                   <div className="age-talkAddress">
                     <a
                       className="age-addrRow age-addrLink"
@@ -333,7 +320,6 @@ const Footer = () => {
                     </a>
                   </div>
 
-                  {/* Social (from API) */}
                   <div className="age-social" role="group" aria-label="Social links">
                     {socials.map((s) => (
                       <a
@@ -351,12 +337,10 @@ const Footer = () => {
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
 
-        {/* ===== Bottom ===== */}
         <div className="age-footer__bottom">
           <div className="age-container">
             <div className="age-bottomWrap">
@@ -382,7 +366,6 @@ const Footer = () => {
                   </div>
                 ))}
               </div>
-
             </div>
           </div>
         </div>
@@ -464,7 +447,6 @@ const Footer = () => {
         .age-addrLines{ line-height:1.65; color:${TEXT_SOFT}; }
         .age-addrRow:hover .age-addrLines{ color: rgba(233,241,250,.9); }
 
-        /* ✅ SOCIAL: show Pinterest on desktop too (no clip) */
         .age-social{
           display:flex;
           align-items:center;
@@ -472,8 +454,8 @@ const Footer = () => {
           width:100%;
           max-width:100%;
           flex-wrap:nowrap;
-          overflow:hidden;   /* keep no scrollbar */
-          gap:10px;          /* default */
+          overflow:hidden;
+          gap:10px;
         }
         .age-socialBtn{
           flex:0 0 auto;
@@ -494,13 +476,11 @@ const Footer = () => {
           box-shadow:0 10px 24px rgba(0,0,0,.35);
         }
 
-        /* ✅ Desktop 4-col layout makes this column narrower → shrink buttons so 6 icons fit */
         @media (min-width: 1101px){
           .age-social{ gap:6px; }
           .age-socialBtn{ width:36px; height:36px; border-radius:10px; }
         }
 
-        /* Mobile tweak */
         @media (max-width: 420px){
           .age-social{ gap:9px; }
           .age-socialBtn{ width:38px; height:38px; border-radius:10px; }
@@ -528,13 +508,27 @@ const Footer = () => {
           .age-title{ font-size:18px; }
           .age-footer__top{ padding:40px 0 22px; }
         }
+
+        /* ✅ MOBILE: better padding + center menus + center socials */
+        @media (max-width:640px){
+          .age-container{ padding: 0 20px; } /* more left/right */
+          .age-widget{ text-align:center; }
+          .age-title::after{ left:50%; transform:translateX(-50%); } /* underline centered */
+
+          .age-list li{ margin: 0 0 12px; }
+          .age-addressBoard{ padding:16px 14px 10px; }
+          .age-addressTitle{ justify-content:center; }
+          .age-talkRow{ justify-content:center; }
+          .age-addrRow{ justify-content:center; text-align:left; }
+          .age-social{ justify-content:center; } /* ✅ socials centered */
+        }
+
         @media (max-width:575px){
           .age-copy{ font-size:13.6px; }
           .age-trustCard{ width:42px; height:42px; border-radius:10px; }
           .age-trustCard :global(img){ max-height:30px; }
         }
 
-        /* Toastify */
         :global(.Toastify__toast){
           border-radius: 14px !important;
           background: linear-gradient(180deg, rgba(17,35,56,.98), rgba(20,42,66,.98)) !important;

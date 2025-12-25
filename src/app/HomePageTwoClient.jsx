@@ -90,10 +90,11 @@ export default function HomePageTwoClient() {
       <FashionBanner />
       <PopularProducts />
       <WeeksFeatured />
+             <FeatureAreaTwo />
+
       <FashionTestimonial />
       <BlogArea />
-      <FeatureAreaTwo />
-
+     
       {/* ✅ WhatsApp button (API number) */}
       <a
         href={whatsappHref}

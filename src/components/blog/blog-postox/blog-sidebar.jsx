@@ -18,21 +18,18 @@ const BlogSidebar = () => {
           <h3 className="tp-sidebar-widget-title">About Me</h3>
           <div className="tp-sidebar-widget-content">
             <div className="tp-sidebar-about">
-              <div className="tp-sidebar-about-thumb mb-25">
-                <a href="#">
-                  <Image 
-                    src={author?.authorimage} 
-                    alt={author?.name || "Rajesh Goyal"}
-                    width={200}
-                    height={200}
-                    style={{
-                      width: "100%",
-                      height: "auto",
-                      objectFit: "cover"
-                    }}
-                  />
-                </a>
-              </div>
+             <div className="tp-sidebar-about-thumb mb-25">
+  <a href="#" className="tp-profile-avatar tp-profile-avatar--oval">
+    <Image
+      src={author?.authorimage} // fallback (change path if needed)
+      alt={author?.name || "Rajesh Goyal"}
+      fill
+      sizes="200px"
+      className="tp-profile-avatar__img"
+    />
+  </a>
+</div>
+
               <div className="tp-sidebar-about-content">
                 {isLoading ? (
                   <div style={{ textAlign: "center", color: "#666" }}>

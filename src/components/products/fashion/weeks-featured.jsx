@@ -59,13 +59,38 @@ function getImageUrl(item) {
   );
 }
 
+/* ---------------- productTag -> top badge (replace Denim Fabrics) ---------------- */
+const normalizeTag = (t) =>
+  String(t || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[_\s]+/g, '-');
+
+const getTagArray = (p, item) => {
+  const tags = p?.productTag ?? item?.productTag ?? [];
+  return Array.isArray(tags) ? tags : [];
+};
+
+const pickTopLabelFromTags = (tags = []) => {
+  const set = new Set(tags.map(normalizeTag));
+
+  // Priority you asked: if endpoint is Top Rated, show that first when present
+  if (set.has('top-rated') || set.has('toprated') || set.has('topratedproduct')) return 'Top Rated';
+  if (set.has('popular')) return 'Popular';
+  if (set.has('new') || set.has('new-arrival') || set.has('newarrival')) return 'New Arrival';
+
+  // fallback: show first tag as label
+  const first = tags.find(Boolean);
+  return first ? String(first).replace(/[-_]/g, ' ') : 'Featured';
+};
+
 /* ---------------- slider settings ---------------- */
 const SLIDER_SETTINGS = {
-  spaceBetween: 0, /* No space between slides on mobile */
+  spaceBetween: 0,
   slidesPerView: 1,
   loop: false,
   autoplay: false,
-  centeredSlides: true, /* Center slides by default */
+  centeredSlides: true,
   pagination: {
     el: '.featured-pagination',
     clickable: true,
@@ -75,7 +100,6 @@ const SLIDER_SETTINGS = {
     nextEl: '.featured-next',
     prevEl: '.featured-prev',
   },
-  // Enhanced touch/swipe settings
   touchRatio: 1,
   touchAngle: 45,
   simulateTouch: true,
@@ -93,33 +117,33 @@ const SLIDER_SETTINGS = {
   watchSlidesProgress: true,
   watchSlidesVisibility: true,
   breakpoints: {
-    1400: { 
-      slidesPerView: 4, 
+    1400: {
+      slidesPerView: 4,
       spaceBetween: 30,
       centeredSlides: false,
       loop: true,
       loopAdditionalSlides: 2,
     },
-    1200: { 
-      slidesPerView: 3, 
+    1200: {
+      slidesPerView: 3,
       spaceBetween: 25,
       centeredSlides: false,
       loop: true,
       loopAdditionalSlides: 2,
     },
-    992: { 
-      slidesPerView: 3, 
+    992: {
+      slidesPerView: 3,
       spaceBetween: 20,
       centeredSlides: false,
       loop: false,
     },
-    768: { 
+    768: {
       slidesPerView: 1,
       spaceBetween: 0,
       centeredSlides: true,
       loop: false,
     },
-    576: { 
+    576: {
       slidesPerView: 1,
       spaceBetween: 0,
       centeredSlides: true,
@@ -134,7 +158,7 @@ const SLIDER_SETTINGS = {
       simulateTouch: true,
       resistanceRatio: 0.5,
     },
-    0: { 
+    0: {
       slidesPerView: 1,
       spaceBetween: 0,
       centeredSlides: true,
@@ -161,7 +185,6 @@ const WeeksFeatured = () => {
   const { data: products, isError, isLoading } = useGetTopRatedQuery();
   const swiperRef = useRef(null);
 
-  // Handle mobile swiper initialization
   useEffect(() => {
     const handleResize = () => {
       if (swiperRef.current && swiperRef.current.swiper) {
@@ -181,10 +204,10 @@ const WeeksFeatured = () => {
     const items = products.data;
 
     content = (
-      <Swiper 
-        {...SLIDER_SETTINGS} 
+      <Swiper
+        {...SLIDER_SETTINGS}
         ref={swiperRef}
-        modules={[Pagination, Autoplay, Navigation]} 
+        modules={[Pagination, Autoplay, Navigation]}
         className="featured-slider"
         onSwiper={(swiper) => {
           swiperRef.current = { swiper };
@@ -197,19 +220,15 @@ const WeeksFeatured = () => {
           const imageUrl = getImageUrl(item);
           const slug = p?.slug || pid;
           const detailsHref = `/fabric/${encodeURIComponent(slug)}`;
-          
-          // Handle category as object - extract name property
-          const categoryData = p?.category;
-          const category = typeof categoryData === 'object' 
-            ? categoryData?.name || 'Premium Fabric' 
-            : categoryData || 'Premium Fabric';
-            
-          // Extract leadtime data
+
+          // ✅ Top-left badge text comes from productTag[]
+          const tagArr = getTagArray(p, item);
+          const topLabel = pickTopLabelFromTags(tagArr);
+
+          // leadtime
           const leadtimeData = p?.leadtime;
-          const leadtimeText = Array.isArray(leadtimeData) && leadtimeData.length > 0 
-            ? leadtimeData[0] 
-            : 'In Stock';
-            
+          const leadtimeText = Array.isArray(leadtimeData) && leadtimeData.length > 0 ? leadtimeData[0] : 'In Stock';
+
           const eager = idx < 3;
 
           return (
@@ -217,11 +236,11 @@ const WeeksFeatured = () => {
               <div className="featured-card">
                 {/* Card Top Section */}
                 <div className="card-top">
-                  {/* Category Tag */}
+                  {/* ✅ productTag label (replaces Denim Fabrics) */}
                   <div className="category-tag">
-                    <span className="tag-text">{category}</span>
+                    <span className="tag-text">{topLabel}</span>
                   </div>
-                  
+
                   {/* Image Container */}
                   <Link href={detailsHref} target="_blank" rel="noopener noreferrer" className="card-image-container">
                     <div className="image-wrapper">
@@ -237,45 +256,60 @@ const WeeksFeatured = () => {
                         className="card-image"
                       />
                     </div>
-                    
-                    {/* New Collection Badge */}
-                    <div className="collection-badge">
-                      <span className="badge-text">New Arrival</span>
-                    </div>
+
+                    {/* ❌ Removed New Arrival badge */}
                   </Link>
                 </div>
 
                 {/* Card Bottom Section */}
                 <div className="card-bottom">
-                  {/* Product Info */}
                   <div className="product-info">
                     <h3 className="product-title">
-                      <Link href={detailsHref} target="_blank" rel="noopener noreferrer">{title}</Link>
+                      <Link href={detailsHref} target="_blank" rel="noopener noreferrer">
+                        {title}
+                      </Link>
                     </h3>
-                    
-                    {/* Quick Stats */}
+
                     <div className="quick-stats">
                       <div className="stat-item">
                         <svg className="stat-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path
+                            d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
                         </svg>
                         <span className="stat-text">Premium Quality</span>
                       </div>
+
                       <div className="stat-item">
                         <svg className="stat-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                          <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path
+                            d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
                         </svg>
                         <span className="stat-text">{leadtimeText}</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Quick Action */}
                   <div className="quick-action">
                     <Link href={detailsHref} target="_blank" rel="noopener noreferrer" className="quick-view-btn">
                       <span className="btn-text">Explore</span>
                       <svg className="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
-                        <path d="M14 5L21 12M21 12L14 19M21 12H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path
+                          d="M14 5L21 12M21 12L14 19M21 12H3"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     </Link>
                   </div>
@@ -289,7 +323,7 @@ const WeeksFeatured = () => {
   }
 
   return (
-    <section className="featured-section pt-60 pb-60">
+    <section className="featured-section pt-10 pb-10">
       <div className="container">
         <div className="row">
           <div className="col-xl-12">
@@ -297,41 +331,45 @@ const WeeksFeatured = () => {
               <span className="section-subtitle">
                 Featured Collections
                 <svg className="tp-shape-line" width="60" height="4" viewBox="0 0 60 4" fill="none">
-                  <path d="M0 2H60" stroke="var(--tp-theme-secondary)" strokeWidth="3" strokeLinecap="round"/>
+                  <path d="M0 2H60" stroke="var(--tp-theme-secondary)" strokeWidth="3" strokeLinecap="round" />
                 </svg>
               </span>
               <h3 className="section-title">Top-Rated Fabrics</h3>
-
             </div>
           </div>
         </div>
 
-        {/* Slider Content */}
         <div className="featured-slider-wrapper">
           {/* Navigation Arrows */}
           <div className="featured-nav-wrapper">
-            <button className="featured-nav featured-prev" type="button">
+            <button className="featured-nav featured-prev" type="button" aria-label="Previous">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <polyline points="15,18 9,12 15,6" />
               </svg>
             </button>
-            <button className="featured-nav featured-next" type="button">
+            <button className="featured-nav featured-next" type="button" aria-label="Next">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <polyline points="9,18 15,12 9,6" />
               </svg>
             </button>
           </div>
+
           {content}
         </div>
 
-        {/* Browse All Button - Moved Below */}
         <div className="row">
           <div className="col-xl-12">
-            <div className="featured-btn-wrapper text-center mt-30">
+            <div className="featured-btn-wrapper text-center mt-10">
               <Link href="/shop" className="view-all-link">
                 Browse All
                 <svg className="link-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none">
-                  <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path
+                    d="M5 12H19M19 12L12 5M19 12L12 19"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </Link>
             </div>
@@ -379,25 +417,13 @@ const WeeksFeatured = () => {
           line-height: 1.2;
         }
 
-        .section-description {
-          color: var(--tp-text-2);
-          font-size: 16px;
-          max-width: 650px;
-          margin: 0 auto;
-          font-family: var(--tp-ff-roboto);
-          line-height: 1.6;
-          text-align: center;
-          word-spacing: 0.1em;
-          letter-spacing: 0.02em;
-        }
-
         .view-all-link {
           display: inline-flex;
           align-items: center;
           gap: 12px;
           padding: 16px 40px;
-          background: var(--tp-theme-secondary); /* Theme secondary color */
-          color: var(--tp-theme-primary); /* Blue text instead of white */
+          background: var(--tp-theme-secondary);
+          color: var(--tp-theme-primary);
           border: 2px solid var(--tp-theme-secondary);
           border-radius: 30px;
           font-weight: 600;
@@ -409,8 +435,8 @@ const WeeksFeatured = () => {
         }
 
         .view-all-link:hover {
-          background: var(--tp-common-white); /* White background on hover */
-          color: var(--tp-theme-primary); /* Blue text on hover for consistency */
+          background: var(--tp-common-white);
+          color: var(--tp-theme-primary);
           border-color: var(--tp-theme-primary);
           transform: translateY(-2px);
           box-shadow: 0 8px 24px rgba(44, 76, 151, 0.25);
@@ -427,7 +453,7 @@ const WeeksFeatured = () => {
         /* ===== SLIDER WRAPPER ===== */
         .featured-slider-wrapper {
           margin: 0 -12px;
-          padding: 10px 50px 50px; /* Add horizontal padding for arrows */
+          padding: 10px 50px 50px;
           position: relative;
         }
 
@@ -435,7 +461,6 @@ const WeeksFeatured = () => {
           padding: 10px !important;
         }
 
-        /* Swiper Slide Styling */
         .featured-slide {
           height: auto !important;
           display: flex !important;
@@ -453,55 +478,49 @@ const WeeksFeatured = () => {
           pointer-events: none;
         }
 
+        /* ✅ Transparent / glass arrows */
         .featured-nav {
           position: absolute;
           top: 50%;
           transform: translateY(-50%);
           width: 40px;
           height: 40px;
-          background: var(--tp-theme-primary); /* Blue background */
-          border: 1px solid var(--tp-theme-primary);
+
+          background: rgba(17, 35, 56, 0.28);
+          border: 1px solid rgba(44, 76, 151, 0.25);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: var(--tp-common-white); /* White arrows */
+
+          color: rgba(44, 76, 151, 0.95);
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: all 0.25s ease;
           pointer-events: auto;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+          box-shadow: 0 6px 18px rgba(15, 34, 53, 0.1);
         }
 
         .featured-prev {
-          left: 10px; /* Move inside container */
+          left: 10px;
         }
 
         .featured-next {
-          right: 10px; /* Move inside container */
+          right: 10px;
         }
 
         .featured-nav:hover {
-          background: var(--tp-common-white); /* White background on hover */
-          color: var(--tp-theme-primary); /* Blue arrows on hover */
-          border-color: var(--tp-theme-primary);
-          transform: translateY(-50%) scale(1.1);
+          background: rgba(17, 35, 56, 0.4);
+          border-color: rgba(44, 76, 151, 0.45);
+          color: rgba(44, 76, 151, 1);
+          transform: translateY(-50%) scale(1.06);
         }
 
-        .featured-nav svg {
-          width: 16px;
-          height: 16px;
-        }
-
-        .featured-nav:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .featured-nav:disabled:hover {
-          background: var(--tp-theme-primary);
-          color: var(--tp-common-white);
-          border-color: var(--tp-theme-primary);
-          transform: translateY(-50%);
+        .featured-nav:active {
+          transform: translateY(-50%) scale(0.98);
         }
 
         /* ===== MODERN CARD DESIGN ===== */
@@ -536,6 +555,7 @@ const WeeksFeatured = () => {
           z-index: 2;
         }
 
+        /* ✅ Top-left tag style */
         .tag-text {
           display: inline-block;
           padding: 6px 12px;
@@ -577,25 +597,6 @@ const WeeksFeatured = () => {
           transform: scale(1.05);
         }
 
-        .collection-badge {
-          position: absolute;
-          bottom: 16px;
-          right: 16px;
-          z-index: 2;
-        }
-
-        .badge-text {
-          display: inline-block;
-          padding: 6px 12px;
-          background: var(--tp-theme-secondary);
-          color: var(--tp-theme-primary); /* Blue text instead of white */
-          font-size: 11px;
-          font-weight: 600;
-          border-radius: 16px;
-          font-family: var(--tp-ff-jost);
-          letter-spacing: 0.5px;
-        }
-
         /* Card Bottom */
         .card-bottom {
           padding: 20px;
@@ -624,7 +625,7 @@ const WeeksFeatured = () => {
         }
 
         .product-title a {
-          color: var(--tp-text-1) !important; /* Ensure dark text instead of inherit */
+          color: var(--tp-text-1) !important;
           text-decoration: none;
           transition: color 0.2s ease;
         }
@@ -657,7 +658,7 @@ const WeeksFeatured = () => {
           font-family: var(--tp-ff-roboto);
         }
 
-        /* Quick Action Button - REVERSED COLORS */
+        /* Quick Action Button */
         .quick-action {
           border-top: 1px solid var(--tp-grey-2);
           padding-top: 18px;
@@ -670,9 +671,9 @@ const WeeksFeatured = () => {
           gap: 8px;
           width: 100%;
           padding: 10px;
-          background: var(--tp-common-white); /* White background by default */
-          color: var(--tp-theme-primary); /* Blue text by default */
-          border: 2px solid var(--tp-theme-primary); /* Blue border */
+          background: var(--tp-common-white);
+          color: var(--tp-theme-primary);
+          border: 2px solid var(--tp-theme-primary);
           border-radius: 8px;
           font-weight: 600;
           font-size: 14px;
@@ -682,8 +683,8 @@ const WeeksFeatured = () => {
         }
 
         .quick-view-btn:hover {
-          background: var(--tp-theme-primary); /* Blue background on hover */
-          color: var(--tp-common-white); /* White text on hover */
+          background: var(--tp-theme-primary);
+          color: var(--tp-common-white);
           border-color: var(--tp-theme-primary);
           transform: translateY(-2px);
         }
@@ -696,15 +697,9 @@ const WeeksFeatured = () => {
           transition: transform 0.3s ease;
         }
 
-        /* ===== PAGINATION - Hidden ===== */
-        .featured-pagination {
-          display: none !important;
-        }
-
-        .featured-pagination .swiper-pagination-bullet {
-          display: none !important;
-        }
-
+        /* Pagination hidden */
+        .featured-pagination,
+        .featured-pagination .swiper-pagination-bullet,
         .featured-pagination .swiper-pagination-bullet-active {
           display: none !important;
         }
@@ -712,386 +707,89 @@ const WeeksFeatured = () => {
         /* ===== MOBILE SWIPER FIXES ===== */
         @media (max-width: 768px) {
           .swiper {
-            touch-action: auto !important; /* Allow all touch interactions */
+            touch-action: auto !important;
             overflow: hidden !important;
           }
-          
+
           .swiper-wrapper {
-            touch-action: auto !important; /* Allow all touch interactions */
+            touch-action: auto !important;
             display: flex !important;
             align-items: stretch !important;
+            justify-content: center !important;
           }
-          
+
           .swiper-slide {
-            touch-action: auto !important; /* Allow all touch interactions */
+            touch-action: auto !important;
             height: auto !important;
             display: flex !important;
             flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
           }
-          
-          /* Ensure proper touch handling */
+
           .featured-slider {
-            touch-action: auto !important; /* Allow all touch interactions */
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
+            touch-action: auto !important;
             user-select: none;
             overflow: hidden !important;
             width: 100% !important;
-          }
-          
-          .featured-slider .swiper-wrapper {
-            touch-action: auto !important; /* Allow all touch interactions */
-            height: auto !important;
-          }
-          
-          .featured-slider .swiper-slide {
-            touch-action: auto !important; /* Allow all touch interactions */
-            height: auto !important;
-            width: 100% !important;
-            flex-shrink: 0 !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-          }
-          
-          /* Fix card display on mobile */
-          .featured-card {
-            width: 100% !important;
-            max-width: 100% !important;
-            height: auto !important;
             display: flex !important;
-            flex-direction: column !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-            margin: 0 !important; /* Remove any margin */
-          }
-          
-          .card-image-container {
-            width: 100% !important;
-            height: auto !important;
-            aspect-ratio: 1 !important;
-          }
-          
-          .card-image {
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: contain !important;
-          }
-          
-          .card-bottom {
-            width: 100% !important;
-            flex: 1 !important;
-          }
-        }
-
-        /* ===== RESPONSIVE DESIGN ===== */
-        
-        /* Large Desktop */
-        @media (min-width: 1400px) {
-          .section-title {
-            font-size: 36px;
-          }
-          
-          .featured-slider-wrapper {
-            margin: 0 -15px;
-          }
-        }
-
-        /* Desktop */
-        @media (max-width: 1200px) {
-          .section-title {
-            font-size: 32px;
-          }
-          
-          .section-description {
-            font-size: 15px;
-          }
-          
-          .card-top,
-          .card-bottom {
-            padding: 18px;
-          }
-          
-          .product-title {
-            font-size: 16px;
-          }
-          
-          .stat-text {
-            font-size: 12.5px;
-          }
-        }
-
-        /* Tablet Landscape */
-        @media (max-width: 992px) {
-          .section-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 15px;
-          }
-          
-          .section-title {
-            font-size: 30px;
-          }
-          
-          .section-subtitle {
-            font-size: 13px;
-          }
-          
-          .view-all-link {
-            align-self: flex-start;
-          }
-          
-          .featured-slider-wrapper {
-            margin: 0 -10px;
-            padding: 10px 10px 40px;
-          }
-          
-          .card-top,
-          .card-bottom {
-            padding: 16px;
-          }
-          
-          .card-image {
-            padding: 20px;
-          }
-          
-          .tag-text,
-          .badge-text {
-            font-size: 10px;
-            padding: 5px 10px;
-          }
-        }
-
-        /* Tablet Portrait */
-        @media (max-width: 768px) {
-          .featured-section {
-            padding: 60px 0 !important;
-          }
-          
-          .section-title {
-            font-size: 28px;
-          }
-          
-          .section-description {
-            font-size: 14px;
-            max-width: 100%;
-          }
-          
-          .featured-card {
-            border-radius: 14px;
-            width: 100%;
-            max-width: 320px; /* Fixed max width */
-            margin: 0 auto; /* Center the card */
-            min-height: 500px;
-          }
-          
-          .card-image-container {
-            aspect-ratio: 1;
-            min-height: 300px;
-          }
-          
-          .product-title {
-            font-size: 16px;
-            margin-bottom: 15px;
-          }
-          
-          .quick-view-btn {
-            padding: 12px;
-            font-size: 14px;
-          }
-          
-          .view-all-link {
-            padding: 14px 32px;
-            font-size: 14px;
-            border-radius: 30px;
-          }
-          
-          /* Show navigation arrows on mobile */
-          .featured-nav-wrapper {
-            display: block;
-          }
-          
-          .featured-nav {
-            display: flex;
-          }
-          
-          /* Adjust arrow positioning for mobile */
-          .featured-prev {
-            left: 15px;
+            justify-content: center !important;
           }
 
-          .featured-next {
-            right: 15px;
-          }
-          
-          /* SINGLE CARD MOBILE LAYOUT */
-          .featured-slider-wrapper {
-            padding: 10px 0 50px;
-            margin: 0;
-            position: relative;
-          }
-          
-          .featured-slider {
-            overflow: hidden !important;
-            padding: 10px 20px !important;
-            width: 100% !important;
-          }
-          
           .featured-slider .swiper-wrapper {
-            display: flex !important;
-            align-items: center !important;
+            touch-action: auto !important;
+            height: auto !important;
+            justify-content: center !important;
           }
-          
+
           .featured-slider .swiper-slide {
+            touch-action: auto !important;
+            height: auto !important;
             width: 100% !important;
             flex-shrink: 0 !important;
             display: flex !important;
             justify-content: center !important;
+            align-items: center !important;
             padding: 0 !important;
           }
-          
-          /* Ensure only one card is visible */
-          .featured-slider .swiper-slide .featured-card {
-            width: 100% !important;
-            max-width: 320px !important;
+
+          .featured-card {
+            width: 90% !important;
+            max-width: 350px !important;
+            margin: 0 auto !important;
+            box-shadow: 0 8px 24px rgba(15, 34, 53, 0.12) !important;
+          }
+
+          .featured-slider-wrapper {
+            padding: 10px 0 50px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
           }
         }
 
-        /* Mobile */
+        /* ✅ smaller arrows on small phones */
         @media (max-width: 576px) {
-          .section-title {
-            font-size: 26px;
+          .featured-nav {
+            width: 34px;
+            height: 34px;
+            background: rgba(17, 35, 56, 0.2);
+            border: 1px solid rgba(44, 76, 151, 0.18);
+            box-shadow: 0 4px 14px rgba(15, 34, 53, 0.08);
           }
-          
-          .section-subtitle {
-            font-size: 12px;
-          }
-          
-          .header-content {
-            min-width: 100%;
-          }
-          
-          .featured-card {
-            max-width: 300px; /* Slightly smaller on very small screens */
-            min-height: 470px;
-          }
-          
-          .featured-slider {
-            padding: 10px 15px !important;
-          }
-          
-          .card-image-container {
-            min-height: 270px;
-          }
-          
-          .card-top,
-          .card-bottom {
-            padding: 16px;
-          }
-          
-          .category-tag {
-            top: 16px;
-            left: 16px;
-          }
-          
-          .collection-badge {
-            bottom: 16px;
-            right: 16px;
-          }
-          
-          .card-image {
-            padding: 20px;
-          }
-          
-          .product-title {
-            font-size: 15px;
-          }
-          
-          .stat-text {
-            font-size: 12px;
-          }
-          
-          .stat-icon {
+
+          .featured-nav svg {
             width: 14px;
             height: 14px;
           }
-          
-          .view-all-link {
-            width: 100%;
-            justify-content: center;
-            padding: 14px 32px;
-            font-size: 14px;
-            border-radius: 30px;
-          }
-        }
 
-        /* Small Mobile */
-        @media (max-width: 480px) {
-          .section-title {
-            font-size: 24px;
+          .featured-prev {
+            left: 8px;
           }
-          
-          .section-description {
-            font-size: 13px;
-          }
-          
-          .featured-slider-wrapper {
-            margin: 0 -6px;
-          }
-          
-          .card-top,
-          .card-bottom {
-            padding: 12px;
-          }
-          
-          .card-image {
-            padding: 14px;
-          }
-          
-          .product-title {
-            font-size: 13px;
-          }
-          
-          .quick-view-btn {
-            padding: 8px;
-            font-size: 12px;
-          }
-        }
 
-        @media (max-width: 380px) {
-          .section-title {
-            font-size: 22px;
+          .featured-next {
+            right: 8px;
           }
-          
-          .section-header {
-            margin-bottom: 30px;
-          }
-          
-          .product-title {
-            font-size: 12.5px;
-          }
-          
-          .stat-item {
-            flex-wrap: wrap;
-          }
-        }
-
-        /* ===== DARK THEME SUPPORT ===== */
-        .theme-dark .featured-section {
-          background: var(--tp-grey-1);
-        }
-
-        .theme-dark .featured-card {
-          background: var(--tp-common-white);
-          border-color: var(--tp-grey-2);
-        }
-
-        .theme-dark .card-image-container {
-          background: var(--tp-grey-5);
-        }
-
-        .theme-dark .quick-view-btn {
-          border-color: var(--tp-grey-2);
         }
       `}</style>
     </section>

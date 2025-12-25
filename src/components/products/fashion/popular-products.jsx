@@ -92,12 +92,33 @@ function getItemImage(item) {
   );
 }
 
+/* ---------- Badge from API productTag[] ---------- */
+const normalizeTag = (t) =>
+  String(t || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[_\s]+/g, '-');
+
+const pickBadgeFromTags = (tags = []) => {
+  if (!Array.isArray(tags)) return null;
+  const set = new Set(tags.map(normalizeTag));
+
+  // priority (change if you want)
+  if (set.has('popular')) return { key: 'popular', label: 'Popular' };
+  if (set.has('top-rated') || set.has('toprated') || set.has('topratedproduct'))
+    return { key: 'top-rated', label: 'Top Rated' };
+  if (set.has('new') || set.has('new-arrival') || set.has('newarrival'))
+    return { key: 'new', label: 'New' };
+
+  return null;
+};
+
 /* ---------- slider options ---------- */
 const SLIDER_OPTS = {
-  spaceBetween: 0, /* No space between slides on mobile */
+  spaceBetween: 0,
   loop: false,
   speed: 400,
-  centeredSlides: true, /* Center slides by default */
+  centeredSlides: true,
   autoplay: false,
   pagination: {
     el: '.swiper-pagination',
@@ -107,7 +128,6 @@ const SLIDER_OPTS = {
     nextEl: '.tp-popular-next',
     prevEl: '.tp-popular-prev',
   },
-  // Enhanced touch/swipe settings
   touchRatio: 1,
   touchAngle: 45,
   simulateTouch: true,
@@ -125,33 +145,33 @@ const SLIDER_OPTS = {
   watchSlidesProgress: true,
   watchSlidesVisibility: true,
   breakpoints: {
-    1400: { 
-      slidesPerView: 5, 
+    1400: {
+      slidesPerView: 5,
       spaceBetween: 24,
       centeredSlides: false,
       loop: true,
       loopAdditionalSlides: 2,
     },
-    1200: { 
-      slidesPerView: 4, 
+    1200: {
+      slidesPerView: 4,
       spaceBetween: 20,
       centeredSlides: false,
       loop: true,
       loopAdditionalSlides: 2,
     },
-    992: { 
-      slidesPerView: 3, 
+    992: {
+      slidesPerView: 3,
       spaceBetween: 20,
       centeredSlides: false,
       loop: false,
     },
-    768: { 
+    768: {
       slidesPerView: 1,
       spaceBetween: 0,
       centeredSlides: true,
       loop: false,
     },
-    576: { 
+    576: {
       slidesPerView: 1,
       spaceBetween: 0,
       centeredSlides: true,
@@ -166,7 +186,7 @@ const SLIDER_OPTS = {
       simulateTouch: true,
       resistanceRatio: 0.5,
     },
-    0: { 
+    0: {
       slidesPerView: 1,
       spaceBetween: 0,
       centeredSlides: true,
@@ -192,7 +212,6 @@ export default function PopularProducts() {
   const { data, isError, isLoading } = useGetPopularNewProductsQuery();
   const swiperRef = useRef(null);
 
-  // Handle mobile swiper initialization
   useEffect(() => {
     const handleResize = () => {
       if (swiperRef.current && swiperRef.current.swiper) {
@@ -211,7 +230,7 @@ export default function PopularProducts() {
   if (
     !isLoading &&
     !isError &&
-    data?.status === 1 &&
+    (data?.status === 1 || data?.success === true) &&
     Array.isArray(data?.data) &&
     data.data.length
   ) {
@@ -236,17 +255,24 @@ export default function PopularProducts() {
           const detailsHref = slug ? `/fabric/${slug}` : '#';
           const eager = idx < 3;
 
+          const tags = p?.productTag || seoDoc?.productTag || [];
+          const badge = pickBadgeFromTags(tags);
+
           return (
             <SwiperSlide key={seoDoc._id || pid || idx} className="tp-popular-slide">
               <div className="tp-popular-product-card">
                 {/* Product Image */}
                 <div className="tp-popular-product-img-wrapper">
                   <Link href={detailsHref} className="tp-popular-product-img-link">
-                    {/* Popular Badge */}
-                    <div className="tp-popular-badge">
-                      <span className="tp-popular-badge-text">Popular</span>
-                    </div>
-                    
+                    {/* Badge (dynamic from productTag[]) */}
+                    {badge && (
+                      <div className="tp-popular-badge">
+                        <span className={`tp-popular-badge-text tp-badge-${badge.key}`}>
+                          {badge.label}
+                        </span>
+                      </div>
+                    )}
+
                     <Image
                       src={src}
                       alt={pname}
@@ -258,9 +284,6 @@ export default function PopularProducts() {
                       quality={80}
                       className="tp-popular-product-img"
                     />
-                    
-                    {/* Hover Overlay */}
-                  
                   </Link>
                 </div>
 
@@ -269,12 +292,18 @@ export default function PopularProducts() {
                   <h3 className="tp-popular-product-title">
                     <Link href={detailsHref}>{pname}</Link>
                   </h3>
-                  
+
                   <div className="tp-popular-product-action">
                     <Link href={detailsHref} className="tp-btn tp-btn-popular">
                       Explore Details
                       <svg className="tp-btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path
+                          d="M5 12H19M19 12L12 5M19 12L12 19"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     </Link>
                   </div>
@@ -288,7 +317,7 @@ export default function PopularProducts() {
   }
 
   return (
-    <section className="tp-popular-products-area pt-60 pb-60">
+    <section className="tp-popular-products-area pt-30 pb-30">
       <div className="container">
         <div className="row">
           <div className="col-xl-12">
@@ -296,15 +325,11 @@ export default function PopularProducts() {
               <span className="tp-section-title-pre-2">
                 Popular Collection
                 <svg className="tp-shape-line" width="60" height="4" viewBox="0 0 60 4" fill="none">
-                  <path d="M0 2H60" stroke="var(--tp-theme-secondary)" strokeWidth="3" strokeLinecap="round"/>
+                  <path d="M0 2H60" stroke="var(--tp-theme-secondary)" strokeWidth="3" strokeLinecap="round" />
                 </svg>
               </span>
-              <h3 className="tp-section-title-2">
-                Our Most Popular Fabrics
-              </h3>
-              <p className="tp-section-description">
-                Premium quality fabrics loved by designers and manufacturers
-              </p>
+              <h3 className="tp-section-title-2">Our Most Popular Fabrics</h3>
+              <p className="tp-section-description">Premium quality fabrics loved by designers and manufacturers</p>
             </div>
           </div>
         </div>
@@ -314,17 +339,18 @@ export default function PopularProducts() {
             <div className="tp-popular-products-slider-wrapper">
               {/* Navigation Arrows */}
               <div className="tp-popular-nav-wrapper">
-                <button className="tp-popular-nav tp-popular-prev" type="button">
+                <button className="tp-popular-nav tp-popular-prev" type="button" aria-label="Previous">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <polyline points="15,18 9,12 15,6" />
                   </svg>
                 </button>
-                <button className="tp-popular-nav tp-popular-next" type="button">
+                <button className="tp-popular-nav tp-popular-next" type="button" aria-label="Next">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <polyline points="9,18 15,12 9,6" />
                   </svg>
                 </button>
               </div>
+
               {carousel}
             </div>
           </div>
@@ -332,11 +358,17 @@ export default function PopularProducts() {
 
         <div className="row">
           <div className="col-xl-12">
-            <div className="tp-popular-products-btn-wrapper text-center mt-50">
+            <div className="tp-popular-products-btn-wrapper text-center mt-20">
               <Link href="/shop" className="tp-btn tp-btn-border tp-btn-shop-all">
                 View All Products
                 <svg className="tp-btn-shop-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path
+                    d="M5 12H19M19 12L12 5M19 12L12 19"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </Link>
             </div>
@@ -406,7 +438,7 @@ export default function PopularProducts() {
         /* Slider Wrapper */
         .tp-popular-products-slider-wrapper {
           margin: 0 -12px;
-          padding: 20px 50px 40px; /* Add horizontal padding for arrows */
+          padding: 20px 50px 40px;
           position: relative;
         }
 
@@ -421,7 +453,7 @@ export default function PopularProducts() {
           flex-direction: column !important;
         }
 
-        /* Navigation Arrows */
+        /* Navigation Arrows Wrapper */
         .tp-popular-nav-wrapper {
           position: absolute;
           top: 50%;
@@ -432,55 +464,55 @@ export default function PopularProducts() {
           pointer-events: none;
         }
 
+        /* ✅ Glass / transparent arrows (less loud on mobile) */
         .tp-popular-nav {
           position: absolute;
           top: 50%;
           transform: translateY(-50%);
           width: 40px;
           height: 40px;
-          background: var(--tp-theme-primary); /* Blue background */
-          border: 1px solid var(--tp-theme-primary);
+
+          background: rgba(17, 35, 56, 0.28);
+          border: 1px solid rgba(44, 76, 151, 0.25);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: var(--tp-common-white); /* White arrows */
+
+          color: rgba(44, 76, 151, 0.95);
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: all 0.25s ease;
           pointer-events: auto;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+          box-shadow: 0 6px 18px rgba(15, 34, 53, 0.1);
         }
 
         .tp-popular-prev {
-          left: 10px; /* Move inside container */
+          left: 10px;
         }
 
         .tp-popular-next {
-          right: 10px; /* Move inside container */
+          right: 10px;
         }
 
         .tp-popular-nav:hover {
-          background: var(--tp-common-white); /* White background on hover */
-          color: var(--tp-theme-primary); /* Blue arrows on hover */
-          border-color: var(--tp-theme-primary);
-          transform: translateY(-50%) scale(1.1);
+          background: rgba(17, 35, 56, 0.4);
+          border-color: rgba(44, 76, 151, 0.45);
+          color: rgba(44, 76, 151, 1);
+          transform: translateY(-50%) scale(1.06);
         }
 
-        .tp-popular-nav svg {
-          width: 16px;
-          height: 16px;
+        .tp-popular-nav:active {
+          transform: translateY(-50%) scale(0.98);
         }
 
         .tp-popular-nav:disabled {
-          opacity: 0.5;
+          opacity: 0.35;
           cursor: not-allowed;
-        }
-
-        .tp-popular-nav:disabled:hover {
-          background: var(--tp-theme-primary);
-          color: var(--tp-common-white);
-          border-color: var(--tp-theme-primary);
-          transform: translateY(-50%);
+          box-shadow: none;
         }
 
         /* Product Card */
@@ -518,7 +550,7 @@ export default function PopularProducts() {
           height: 100%;
         }
 
-        /* Popular Badge */
+        /* Badge */
         .tp-popular-badge {
           position: absolute;
           top: 16px;
@@ -539,6 +571,22 @@ export default function PopularProducts() {
           text-transform: uppercase;
         }
 
+        /* Optional per-tag colors */
+        .tp-badge-popular {
+          background: var(--tp-theme-primary);
+          color: var(--tp-common-white);
+        }
+
+        .tp-badge-top-rated {
+          background: var(--tp-theme-secondary);
+          color: var(--tp-text-1);
+        }
+
+        .tp-badge-new {
+          background: #16a34a;
+          color: #fff;
+        }
+
         .tp-popular-product-img {
           width: 100% !important;
           height: 100% !important;
@@ -550,35 +598,6 @@ export default function PopularProducts() {
 
         .tp-popular-product-card:hover .tp-popular-product-img {
           transform: scale(1.05);
-        }
-
-        /* Hover Overlay */
-        .tp-popular-product-overlay {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(0deg, rgba(15, 34, 53, 0.85) 0%, rgba(15, 34, 53, 0.7) 50%, rgba(15, 34, 53, 0.3) 100%);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          opacity: 0;
-          transition: opacity 0.3s ease;
-          backdrop-filter: blur(2px);
-        }
-
-        .tp-popular-product-card:hover .tp-popular-product-overlay {
-          opacity: 1;
-        }
-
-        .tp-popular-product-view {
-          color: var(--tp-common-white);
-          font-size: 10px;
-          font-weight: 600;
-          padding: 10px;
-          background: rgba(214, 167, 75, 0.95);
-          border-radius: 24px;
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          font-family: var(--tp-ff-jost);
-          letter-spacing: 0.5px;
         }
 
         /* Product Info */
@@ -606,7 +625,7 @@ export default function PopularProducts() {
         }
 
         .tp-popular-product-title a {
-          color: var(--tp-text-1) !important; /* Ensure dark text instead of inherit */
+          color: var(--tp-text-1) !important;
           text-decoration: none;
           transition: color 0.2s ease;
         }
@@ -619,7 +638,7 @@ export default function PopularProducts() {
           margin-top: auto;
         }
 
-        /* Button Styling - REVERSED COLORS */
+        /* Button Styling */
         .tp-btn.tp-btn-popular {
           display: flex;
           align-items: center;
@@ -627,9 +646,9 @@ export default function PopularProducts() {
           gap: 10px;
           width: 100%;
           padding: 14px;
-          background: var(--tp-common-white); /* White background by default */
-          color: var(--tp-theme-primary); /* Blue text by default */
-          border: 2px solid var(--tp-theme-primary); /* Blue border */
+          background: var(--tp-common-white);
+          color: var(--tp-theme-primary);
+          border: 2px solid var(--tp-theme-primary);
           border-radius: 10px;
           font-weight: 600;
           font-size: 14px;
@@ -641,8 +660,8 @@ export default function PopularProducts() {
         }
 
         .tp-btn.tp-btn-popular:hover {
-          background: var(--tp-theme-primary); /* Blue background on hover */
-          color: var(--tp-common-white); /* White text on hover */
+          background: var(--tp-theme-primary);
+          color: var(--tp-common-white);
           box-shadow: 0 4px 16px rgba(44, 76, 151, 0.2);
         }
 
@@ -654,15 +673,15 @@ export default function PopularProducts() {
           transition: transform 0.3s ease;
         }
 
-        /* Shop All Button - Theme Color */
+        /* Shop All Button */
         .tp-btn.tp-btn-border.tp-btn-shop-all {
           display: inline-flex;
           align-items: center;
           gap: 12px;
           padding: 16px 40px;
-          background: var(--tp-theme-secondary); /* Theme secondary color */
+          background: var(--tp-theme-secondary);
           border: 2px solid var(--tp-theme-secondary);
-          color: var(--tp-theme-primary); /* Blue text instead of white */
+          color: var(--tp-theme-primary);
           border-radius: 30px;
           font-weight: 600;
           font-size: 15px;
@@ -672,8 +691,8 @@ export default function PopularProducts() {
         }
 
         .tp-btn.tp-btn-border.tp-btn-shop-all:hover {
-          background: var(--tp-common-white); /* White background on hover */
-          color: var(--tp-theme-primary); /* Blue text on hover for consistency */
+          background: var(--tp-common-white);
+          color: var(--tp-theme-primary);
           border-color: var(--tp-theme-primary);
           transform: translateY(-2px);
           box-shadow: 0 8px 24px rgba(44, 76, 151, 0.25);
@@ -688,14 +707,8 @@ export default function PopularProducts() {
         }
 
         /* Swiper Pagination - Hidden */
-        .swiper-pagination {
-          display: none !important;
-        }
-
-        .swiper-pagination-bullet {
-          display: none !important;
-        }
-
+        .swiper-pagination,
+        .swiper-pagination-bullet,
         .swiper-pagination-bullet-active {
           display: none !important;
         }
@@ -703,75 +716,90 @@ export default function PopularProducts() {
         /* ===== MOBILE SWIPER FIXES ===== */
         @media (max-width: 768px) {
           .swiper {
-            touch-action: auto !important; /* Allow all touch interactions */
+            touch-action: auto !important;
             overflow: hidden !important;
           }
-          
+
           .swiper-wrapper {
-            touch-action: auto !important; /* Allow all touch interactions */
+            touch-action: auto !important;
             display: flex !important;
             align-items: stretch !important;
+            justify-content: center !important;
           }
-          
+
           .swiper-slide {
-            touch-action: auto !important; /* Allow all touch interactions */
+            touch-action: auto !important;
             height: auto !important;
             display: flex !important;
             flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
           }
-          
-          /* Ensure proper touch handling */
+
           .tp-popular-products-slider {
-            touch-action: auto !important; /* Allow all touch interactions */
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
+            touch-action: auto !important;
             user-select: none;
             overflow: hidden !important;
             width: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
           }
-          
+
           .tp-popular-products-slider .swiper-wrapper {
-            touch-action: auto !important; /* Allow all touch interactions */
+            touch-action: auto !important;
             height: auto !important;
+            justify-content: center !important;
           }
-          
+
           .tp-popular-products-slider .swiper-slide {
-            touch-action: auto !important; /* Allow all touch interactions */
+            touch-action: auto !important;
             height: auto !important;
             width: 100% !important;
             flex-shrink: 0 !important;
             opacity: 1 !important;
             visibility: visible !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
           }
-          
-          /* Fix card display on mobile */
+
           .tp-popular-product-card {
-            width: 100% !important;
-            max-width: 100% !important;
+            width: 90% !important;
+            max-width: 350px !important;
             height: auto !important;
             display: flex !important;
             flex-direction: column !important;
             opacity: 1 !important;
             visibility: visible !important;
-            margin: 0 !important; /* Remove any margin */
+            margin: 0 auto !important;
+            box-shadow: 0 8px 24px rgba(15, 34, 53, 0.12) !important;
           }
-          
+
           .tp-popular-product-img-wrapper {
             width: 100% !important;
             height: auto !important;
             aspect-ratio: 1 !important;
           }
-          
+
           .tp-popular-product-img {
             width: 100% !important;
             height: 100% !important;
             object-fit: contain !important;
           }
-          
+
           .tp-popular-product-info {
             width: 100% !important;
             flex: 1 !important;
+            text-align: center !important;
+          }
+
+          .tp-popular-product-title {
+            text-align: center !important;
+          }
+
+          .tp-popular-product-action {
+            display: flex !important;
+            justify-content: center !important;
           }
         }
 
@@ -780,7 +808,7 @@ export default function PopularProducts() {
           .tp-section-title-2 {
             font-size: 32px;
           }
-          
+
           .tp-popular-product-title {
             font-size: 16px;
           }
@@ -790,15 +818,15 @@ export default function PopularProducts() {
           .tp-section-title-2 {
             font-size: 28px;
           }
-          
+
           .tp-section-description {
             font-size: 15px;
           }
-          
+
           .tp-popular-product-info {
             padding: 20px;
           }
-          
+
           .tp-btn.tp-btn-popular {
             padding: 16px;
             font-size: 13px;
@@ -809,69 +837,64 @@ export default function PopularProducts() {
           .tp-popular-products-area {
             padding: 60px 0;
           }
-          
+
           .tp-section-title-2 {
             font-size: 26px;
           }
-          
+
           .tp-section-title-pre-2 {
             font-size: 13px;
           }
-          
+
           .tp-popular-product-card {
             border-radius: 10px;
-            width: 100%;
-            max-width: 320px; /* Fixed max width */
-            margin: 0 auto; /* Center the card */
+            width: 90%;
+            max-width: 350px;
+            margin: 0 auto;
             min-height: 450px;
+            box-shadow: 0 8px 24px rgba(15, 34, 53, 0.12);
           }
-          
+
           .tp-popular-product-img-wrapper {
             aspect-ratio: 1/1;
             min-height: 280px;
           }
-          
+
           .tp-btn.tp-btn-border.tp-btn-shop-all {
             padding: 14px 32px;
             font-size: 14px;
           }
-          
-          /* Show navigation arrows on mobile */
+
           .tp-popular-nav-wrapper {
             display: block;
           }
-          
+
           .tp-popular-nav {
             display: flex;
           }
-          
-          /* Adjust arrow positioning for mobile */
-          .tp-popular-prev {
-            left: 15px;
-          }
 
-          .tp-popular-next {
-            right: 15px;
-          }
-          
-          /* SINGLE CARD MOBILE LAYOUT */
           .tp-popular-products-slider-wrapper {
             padding: 20px 0 40px;
             margin: 0;
             position: relative;
+            display: flex;
+            justify-content: center;
           }
-          
+
           .tp-popular-products-slider {
             overflow: hidden !important;
             padding: 10px 20px !important;
             width: 100% !important;
+            max-width: 400px !important;
+            margin: 0 auto !important;
           }
-          
+
           .tp-popular-products-slider .swiper-wrapper {
             display: flex !important;
             align-items: center !important;
+            justify-content: center !important;
           }
-          
+
           .tp-popular-products-slider .swiper-slide {
             width: 100% !important;
             flex-shrink: 0 !important;
@@ -879,47 +902,66 @@ export default function PopularProducts() {
             justify-content: center !important;
             padding: 0 !important;
           }
-          
-          /* Ensure only one card is visible */
+
           .tp-popular-products-slider .swiper-slide .tp-popular-product-card {
-            width: 100% !important;
-            max-width: 320px !important;
+            width: 90% !important;
+            max-width: 350px !important;
+            margin: 0 auto !important;
           }
         }
 
+        /* ✅ Even more subtle + smaller arrows on small phones */
         @media (max-width: 576px) {
+          .tp-popular-nav {
+            width: 34px;
+            height: 34px;
+            background: rgba(17, 35, 56, 0.2);
+            border: 1px solid rgba(44, 76, 151, 0.18);
+            box-shadow: 0 4px 14px rgba(15, 34, 53, 0.08);
+          }
+
+          .tp-popular-nav svg {
+            width: 14px;
+            height: 14px;
+          }
+
+          .tp-popular-prev {
+            left: 8px;
+          }
+
+          .tp-popular-next {
+            right: 8px;
+          }
+
           .tp-section-title-2 {
             font-size: 24px;
           }
-          
+
           .tp-popular-product-card {
-            max-width: 300px; /* Slightly smaller on very small screens */
+            max-width: 350px;
             min-height: 420px;
+            margin: 0 auto;
+            width: 90%;
           }
-          
+
           .tp-popular-products-slider {
             padding: 10px 15px !important;
           }
-          
+
           .tp-popular-product-img-wrapper {
             min-height: 250px;
           }
-          
+
           .tp-popular-product-title {
             font-size: 16px;
             min-height: 50px;
           }
-          
-          .tp-popular-product-view {
-            font-size: 14px;
-            padding: 8px 20px;
-          }
-          
+
           .tp-btn.tp-btn-popular {
             padding: 14px;
             font-size: 14px;
           }
-          
+
           .tp-btn.tp-btn-border.tp-btn-shop-all {
             width: 100%;
             justify-content: center;
@@ -927,12 +969,12 @@ export default function PopularProducts() {
             font-size: 14px;
             border-radius: 30px;
           }
-          
+
           .tp-popular-badge {
             top: 16px;
             left: 16px;
           }
-          
+
           .tp-popular-badge-text {
             font-size: 11px;
             padding: 6px 12px;
@@ -943,11 +985,11 @@ export default function PopularProducts() {
           .tp-section-title-2 {
             font-size: 22px;
           }
-          
+
           .tp-section-description {
             font-size: 14px;
           }
-          
+
           .tp-popular-product-title {
             font-size: 14px;
           }
@@ -965,10 +1007,6 @@ export default function PopularProducts() {
 
         .theme-dark .tp-popular-product-img {
           background: var(--tp-grey-5);
-        }
-
-        .theme-dark .tp-popular-product-overlay {
-          background: linear-gradient(0deg, rgba(44, 76, 151, 0.85) 0%, rgba(44, 76, 151, 0.7) 50%, rgba(44, 76, 151, 0.3) 100%);
         }
       `}</style>
     </section>

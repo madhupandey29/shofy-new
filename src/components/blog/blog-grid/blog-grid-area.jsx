@@ -59,7 +59,7 @@ const BlogGridArea = ({ list_area = false }) => {
   const showingTo = Math.min(pageStart + countOfPage, filteredRows.length);
 
   return (
-    <section className="tp-blog-grid-area pb-120">
+    <section className="tp-blog-grid-area pb-20">
       <div className="container" style={{ maxWidth: 1240, margin: '0 auto', padding: '0 24px' }}>
         <div className="row">
           <div className="col-xl-9 col-lg-8">

@@ -428,3 +428,27 @@ h1,h2,h3,h4,h5,h6{
     transform: none !important;
   }
 }
+.tp-profile-avatar {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto; // centers it
+}
+
+/* OVAL (like your screenshot) */
+.tp-profile-avatar--oval {
+  width: 180px;
+  height: 180px;
+}
+
+/* If you want CIRCLE instead, use this class */
+.tp-profile-avatar--circle {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+}
+
+.tp-profile-avatar__img {
+  object-fit: cover;
+  object-position: center;
+}
