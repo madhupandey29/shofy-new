@@ -389,7 +389,7 @@ const HeaderTwo = ({ style_2 = false }) => {
                     <div className="logo d-flex align-items-center" style={{ gap: '12px' }}>
                       <Link href="/" className="d-flex align-items-center" style={{ gap: '12px' }}>
                         <img
-                          src="https://amritafashions.com/wp-content/uploads/amrita-fashions-small-logo-india.webp"
+                          src="/assets/img/logo/age.jpg"
                           alt="Company Logo"
                           width={140}
                           height={44}

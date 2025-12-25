@@ -43,20 +43,21 @@ function absoluteUrlFromAnything(src) {
 
 function getImageUrl(item) {
   const p = item?.product || item;
-  return (
-    absoluteUrlFromAnything(p?.image1) ||
-    absoluteUrlFromAnything(p?.image2) ||
-    absoluteUrlFromAnything(p?.image3) ||
-    absoluteUrlFromAnything(p?.img) ||
-    absoluteUrlFromAnything(p?.image) ||
-    absoluteUrlFromAnything(p?.images) ||
-    absoluteUrlFromAnything(p?.thumbnail) ||
-    absoluteUrlFromAnything(p?.cover) ||
-    absoluteUrlFromAnything(p?.photo) ||
-    absoluteUrlFromAnything(p?.picture) ||
-    absoluteUrlFromAnything(p?.media) ||
-    ""
-  );
+  
+  // Try different image fields
+  const imageFields = [
+    p?.image1, p?.image2, p?.image3, p?.img, p?.image, 
+    p?.images, p?.thumbnail, p?.cover, p?.photo, p?.picture, p?.media
+  ];
+
+  for (const field of imageFields) {
+    const url = absoluteUrlFromAnything(field);
+    if (url && url !== '') {
+      return url;
+    }
+  }
+
+  return '/assets/img/placeholder/product.jpg';
 }
 
 /* ---------------- productTag -> top badge (replace Denim Fabrics) ---------------- */
@@ -86,11 +87,11 @@ const pickTopLabelFromTags = (tags = []) => {
 
 /* ---------------- slider settings ---------------- */
 const SLIDER_SETTINGS = {
-  spaceBetween: 0,
   slidesPerView: 1,
+  spaceBetween: 20,
   loop: false,
   autoplay: false,
-  centeredSlides: true,
+  centeredSlides: false,
   pagination: {
     el: '.featured-pagination',
     clickable: true,
@@ -138,40 +139,22 @@ const SLIDER_SETTINGS = {
       loop: false,
     },
     768: {
-      slidesPerView: 1,
-      spaceBetween: 0,
-      centeredSlides: true,
+      slidesPerView: 2,
+      spaceBetween: 15,
+      centeredSlides: false,
       loop: false,
     },
     576: {
       slidesPerView: 1,
       spaceBetween: 0,
-      centeredSlides: true,
-      initialSlide: 0,
+      centeredSlides: false,
       loop: false,
-      freeMode: false,
-      watchSlidesProgress: true,
-      watchSlidesVisibility: true,
-      touchRatio: 1.2,
-      threshold: 3,
-      allowTouchMove: true,
-      simulateTouch: true,
-      resistanceRatio: 0.5,
     },
     0: {
       slidesPerView: 1,
       spaceBetween: 0,
-      centeredSlides: true,
-      initialSlide: 0,
+      centeredSlides: false,
       loop: false,
-      freeMode: false,
-      watchSlidesProgress: true,
-      watchSlidesVisibility: true,
-      touchRatio: 1.2,
-      threshold: 3,
-      allowTouchMove: true,
-      simulateTouch: true,
-      resistanceRatio: 0.5,
     },
   },
   keyboard: { enabled: true, onlyInViewport: true },
@@ -221,6 +204,8 @@ const WeeksFeatured = () => {
           const slug = p?.slug || pid;
           const detailsHref = `/fabric/${encodeURIComponent(slug)}`;
 
+          console.log(`Featured Product ${idx}:`, { pid, title, imageUrl, slug });
+
           // ✅ Top-left badge text comes from productTag[]
           const tagArr = getTagArray(p, item);
           const topLabel = pickTopLabelFromTags(tagArr);
@@ -245,7 +230,7 @@ const WeeksFeatured = () => {
                   <Link href={detailsHref} target="_blank" rel="noopener noreferrer" className="card-image-container">
                     <div className="image-wrapper">
                       <Image
-                        src={imageUrl || '/assets/img/placeholder/product.jpg'}
+                        src={imageUrl}
                         alt={title}
                         width={CARD_W}
                         height={CARD_H}
@@ -254,6 +239,9 @@ const WeeksFeatured = () => {
                         loading={eager ? 'eager' : 'lazy'}
                         quality={90}
                         className="card-image"
+                        onError={(e) => {
+                          e.target.src = '/assets/img/placeholder/product.jpg';
+                        }}
                       />
                     </div>
 
@@ -452,13 +440,14 @@ const WeeksFeatured = () => {
 
         /* ===== SLIDER WRAPPER ===== */
         .featured-slider-wrapper {
-          margin: 0 -12px;
+          margin: 0;
           padding: 10px 50px 50px;
           position: relative;
         }
 
         .featured-slider {
           padding: 10px !important;
+          overflow: hidden;
         }
 
         .featured-slide {
@@ -704,67 +693,28 @@ const WeeksFeatured = () => {
           display: none !important;
         }
 
-        /* ===== MOBILE SWIPER FIXES ===== */
+        /* ===== MOBILE RESPONSIVE FIXES ===== */
         @media (max-width: 768px) {
-          .swiper {
-            touch-action: auto !important;
-            overflow: hidden !important;
-          }
-
-          .swiper-wrapper {
-            touch-action: auto !important;
-            display: flex !important;
-            align-items: stretch !important;
-            justify-content: center !important;
-          }
-
-          .swiper-slide {
-            touch-action: auto !important;
-            height: auto !important;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: center !important;
-            align-items: center !important;
+          .featured-slider-wrapper {
+            padding: 20px 15px 50px;
+            margin: 0;
           }
 
           .featured-slider {
-            touch-action: auto !important;
-            user-select: none;
             overflow: hidden !important;
-            width: 100% !important;
-            display: flex !important;
-            justify-content: center !important;
-          }
-
-          .featured-slider .swiper-wrapper {
-            touch-action: auto !important;
-            height: auto !important;
-            justify-content: center !important;
-          }
-
-          .featured-slider .swiper-slide {
-            touch-action: auto !important;
-            height: auto !important;
-            width: 100% !important;
-            flex-shrink: 0 !important;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
             padding: 0 !important;
           }
 
-          .featured-card {
-            width: 90% !important;
-            max-width: 350px !important;
-            margin: 0 auto !important;
-            box-shadow: 0 8px 24px rgba(15, 34, 53, 0.12) !important;
+          .featured-slide {
+            width: 100% !important;
+            padding: 0 10px !important;
           }
 
-          .featured-slider-wrapper {
-            padding: 10px 0 50px;
-            margin: 0;
-            display: flex;
-            justify-content: center;
+          .featured-card {
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+            box-shadow: 0 8px 24px rgba(15, 34, 53, 0.12) !important;
           }
         }
 

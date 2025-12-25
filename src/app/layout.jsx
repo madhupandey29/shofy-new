@@ -1,4 +1,5 @@
 import './globals.scss';
+import '../styles/carousel-mobile-fix.css';
 import Providers from '@/components/provider';
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
 import MicrosoftClarity from '@/components/analytics/MicrosoftClarity';

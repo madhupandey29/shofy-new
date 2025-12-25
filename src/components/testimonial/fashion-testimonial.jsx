@@ -26,14 +26,14 @@ const slider_setting = {
   autoplay: { delay: 5200, disableOnInteraction: false, pauseOnMouseEnter: true },
   a11y: { enabled: true },
   // Enhanced touch/swipe settings
-  touchRatio: 1,
+  touchRatio: 1.5,
   touchAngle: 45,
   simulateTouch: true,
   allowTouchMove: true,
   touchStartPreventDefault: false,
   touchMoveStopPropagation: false,
   resistanceRatio: 0.85,
-  threshold: 5,
+  threshold: 10,
   longSwipesRatio: 0.5,
   longSwipesMs: 300,
   followFinger: true,
@@ -305,42 +305,39 @@ function FashionTestimonial() {
         /* ===== MOBILE SWIPER FIXES ===== */
         @media (max-width: 768px) {
           .swiper {
-            touch-action: auto !important; /* Allow all touch interactions */
-            overflow: hidden !important;
+            touch-action: pan-y !important;
+            overflow: visible !important;
           }
           
           .swiper-wrapper {
-            touch-action: auto !important; /* Allow all touch interactions */
+            touch-action: pan-y !important;
             display: flex !important;
             align-items: stretch !important;
           }
           
           .swiper-slide {
-            touch-action: auto !important; /* Allow all touch interactions */
+            touch-action: pan-y !important;
             height: auto !important;
             display: flex !important;
             flex-direction: column !important;
+            width: 100% !important;
+            flex-shrink: 0 !important;
           }
           
-          /* Ensure proper touch handling */
           .tp-testimonial-slider-active {
-            touch-action: auto !important; /* Allow all touch interactions */
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            overflow: hidden !important;
+            touch-action: pan-y !important;
+            overflow: visible !important;
             width: 100% !important;
             padding: 10px 20px !important;
           }
           
           .tp-testimonial-slider-active .swiper-wrapper {
-            touch-action: auto !important; /* Allow all touch interactions */
+            touch-action: pan-y !important;
             height: auto !important;
           }
           
           .tp-testimonial-slider-active .swiper-slide {
-            touch-action: auto !important; /* Allow all touch interactions */
+            touch-action: pan-y !important;
             height: auto !important;
             width: 100% !important;
             flex-shrink: 0 !important;
@@ -348,7 +345,6 @@ function FashionTestimonial() {
             visibility: visible !important;
           }
           
-          /* Fix card display on mobile */
           .age-card {
             width: 100% !important;
             max-width: 100% !important;
@@ -359,13 +355,11 @@ function FashionTestimonial() {
             visibility: visible !important;
           }
           
-          /* Fix container layout */
           .p-relative {
             padding: 0;
             margin: 0;
           }
           
-          /* Adjust arrow positioning */
           .tp-testimonial-slider-button-prev.age-arrow {
             left: 15px;
           }

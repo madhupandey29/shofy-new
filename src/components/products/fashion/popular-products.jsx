@@ -76,20 +76,20 @@ function absoluteUrlFromAnything(src) {
 function getItemImage(item) {
   const p = item?.product || item;
 
-  return (
-    absoluteUrlFromAnything(p?.image1) ||
-    absoluteUrlFromAnything(p?.image2) ||
-    absoluteUrlFromAnything(p?.image3) ||
-    absoluteUrlFromAnything(p?.img) ||
-    absoluteUrlFromAnything(p?.image) ||
-    absoluteUrlFromAnything(p?.images) ||
-    absoluteUrlFromAnything(p?.thumbnail) ||
-    absoluteUrlFromAnything(p?.cover) ||
-    absoluteUrlFromAnything(p?.photo) ||
-    absoluteUrlFromAnything(p?.picture) ||
-    absoluteUrlFromAnything(p?.media) ||
-    ''
-  );
+  // Try different image fields
+  const imageFields = [
+    p?.image1, p?.image2, p?.image3, p?.img, p?.image, 
+    p?.images, p?.thumbnail, p?.cover, p?.photo, p?.picture, p?.media
+  ];
+
+  for (const field of imageFields) {
+    const url = absoluteUrlFromAnything(field);
+    if (url && url !== '') {
+      return url;
+    }
+  }
+
+  return '/assets/img/product/product-1.jpg';
 }
 
 /* ---------- Badge from API productTag[] ---------- */
@@ -115,10 +115,11 @@ const pickBadgeFromTags = (tags = []) => {
 
 /* ---------- slider options ---------- */
 const SLIDER_OPTS = {
-  spaceBetween: 0,
+  slidesPerView: 1,
+  spaceBetween: 20,
   loop: false,
   speed: 400,
-  centeredSlides: true,
+  centeredSlides: false,
   autoplay: false,
   pagination: {
     el: '.swiper-pagination',
@@ -166,40 +167,22 @@ const SLIDER_OPTS = {
       loop: false,
     },
     768: {
-      slidesPerView: 1,
-      spaceBetween: 0,
-      centeredSlides: true,
+      slidesPerView: 2,
+      spaceBetween: 15,
+      centeredSlides: false,
       loop: false,
     },
     576: {
       slidesPerView: 1,
       spaceBetween: 0,
-      centeredSlides: true,
-      initialSlide: 0,
+      centeredSlides: false,
       loop: false,
-      freeMode: false,
-      watchSlidesProgress: true,
-      watchSlidesVisibility: true,
-      touchRatio: 1.2,
-      threshold: 3,
-      allowTouchMove: true,
-      simulateTouch: true,
-      resistanceRatio: 0.5,
     },
     0: {
       slidesPerView: 1,
       spaceBetween: 0,
-      centeredSlides: true,
-      initialSlide: 0,
+      centeredSlides: false,
       loop: false,
-      freeMode: false,
-      watchSlidesProgress: true,
-      watchSlidesVisibility: true,
-      touchRatio: 1.2,
-      threshold: 3,
-      allowTouchMove: true,
-      simulateTouch: true,
-      resistanceRatio: 0.5,
     },
   },
   keyboard: { enabled: true, onlyInViewport: true },
@@ -248,12 +231,14 @@ export default function PopularProducts() {
       >
         {items.map((seoDoc, idx) => {
           const p = seoDoc.product || seoDoc;
-          const src = getItemImage(seoDoc) || '/assets/img/product/product-1.jpg';
+          const src = getItemImage(seoDoc);
           const pid = p?._id;
           const slug = p?.slug || pid;
           const pname = p?.name ?? 'Product';
           const detailsHref = slug ? `/fabric/${slug}` : '#';
           const eager = idx < 3;
+
+          console.log(`Product ${idx}:`, { pid, pname, src, slug });
 
           const tags = p?.productTag || seoDoc?.productTag || [];
           const badge = pickBadgeFromTags(tags);
@@ -283,6 +268,9 @@ export default function PopularProducts() {
                       loading={eager ? 'eager' : 'lazy'}
                       quality={80}
                       className="tp-popular-product-img"
+                      onError={(e) => {
+                        e.target.src = '/assets/img/product/product-1.jpg';
+                      }}
                     />
                   </Link>
                 </div>
@@ -437,13 +425,14 @@ export default function PopularProducts() {
 
         /* Slider Wrapper */
         .tp-popular-products-slider-wrapper {
-          margin: 0 -12px;
+          margin: 0;
           padding: 20px 50px 40px;
           position: relative;
         }
 
         .tp-popular-products-slider {
           padding: 10px !important;
+          overflow: hidden;
         }
 
         /* Swiper Slide Styling */
@@ -713,93 +702,61 @@ export default function PopularProducts() {
           display: none !important;
         }
 
-        /* ===== MOBILE SWIPER FIXES ===== */
+        /* ===== MOBILE RESPONSIVE FIXES ===== */
         @media (max-width: 768px) {
-          .swiper {
-            touch-action: auto !important;
-            overflow: hidden !important;
+          .tp-popular-products-area {
+            padding: 40px 0;
           }
 
-          .swiper-wrapper {
-            touch-action: auto !important;
-            display: flex !important;
-            align-items: stretch !important;
-            justify-content: center !important;
+          .tp-section-title-2 {
+            font-size: 26px;
           }
 
-          .swiper-slide {
-            touch-action: auto !important;
-            height: auto !important;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: center !important;
-            align-items: center !important;
+          .tp-section-title-pre-2 {
+            font-size: 13px;
+          }
+
+          .tp-popular-products-slider-wrapper {
+            padding: 20px 15px 40px;
+            margin: 0;
           }
 
           .tp-popular-products-slider {
-            touch-action: auto !important;
-            user-select: none;
             overflow: hidden !important;
-            width: 100% !important;
-            display: flex !important;
-            justify-content: center !important;
+            padding: 0 !important;
           }
 
-          .tp-popular-products-slider .swiper-wrapper {
-            touch-action: auto !important;
-            height: auto !important;
-            justify-content: center !important;
-          }
-
-          .tp-popular-products-slider .swiper-slide {
-            touch-action: auto !important;
-            height: auto !important;
+          .tp-popular-slide {
             width: 100% !important;
-            flex-shrink: 0 !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
+            padding: 0 10px !important;
           }
 
           .tp-popular-product-card {
-            width: 90% !important;
-            max-width: 350px !important;
-            height: auto !important;
-            display: flex !important;
-            flex-direction: column !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-            margin: 0 auto !important;
-            box-shadow: 0 8px 24px rgba(15, 34, 53, 0.12) !important;
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+            min-height: 450px;
+            box-shadow: 0 8px 24px rgba(15, 34, 53, 0.12);
           }
 
           .tp-popular-product-img-wrapper {
-            width: 100% !important;
-            height: auto !important;
-            aspect-ratio: 1 !important;
+            aspect-ratio: 1/1;
+            min-height: 280px;
           }
 
-          .tp-popular-product-img {
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: contain !important;
+          .tp-btn.tp-btn-border.tp-btn-shop-all {
+            padding: 14px 32px;
+            font-size: 14px;
           }
 
-          .tp-popular-product-info {
-            width: 100% !important;
-            flex: 1 !important;
-            text-align: center !important;
+          .tp-popular-nav-wrapper {
+            display: block;
           }
 
-          .tp-popular-product-title {
-            text-align: center !important;
+          .tp-popular-nav {
+            display: flex;
           }
-
-          .tp-popular-product-action {
-            display: flex !important;
-            justify-content: center !important;
+        }
           }
         }
 
@@ -835,7 +792,7 @@ export default function PopularProducts() {
 
         @media (max-width: 768px) {
           .tp-popular-products-area {
-            padding: 60px 0;
+            padding: 40px 0;
           }
 
           .tp-section-title-2 {
@@ -846,11 +803,35 @@ export default function PopularProducts() {
             font-size: 13px;
           }
 
+          .tp-popular-products-slider-wrapper {
+            padding: 20px 0 40px;
+            margin: 0;
+            position: relative;
+          }
+
+          .tp-popular-products-slider {
+            overflow: visible !important;
+            padding: 20px !important;
+            width: 100% !important;
+          }
+
+          .tp-popular-products-slider .swiper-wrapper {
+            display: flex !important;
+            align-items: center !important;
+          }
+
+          .tp-popular-products-slider .swiper-slide {
+            width: 100% !important;
+            flex-shrink: 0 !important;
+            display: flex !important;
+            justify-content: center !important;
+            padding: 0 10px !important;
+          }
+
           .tp-popular-product-card {
-            border-radius: 10px;
-            width: 90%;
-            max-width: 350px;
-            margin: 0 auto;
+            width: 100% !important;
+            max-width: 350px !important;
+            margin: 0 auto !important;
             min-height: 450px;
             box-shadow: 0 8px 24px rgba(15, 34, 53, 0.12);
           }
@@ -871,42 +852,6 @@ export default function PopularProducts() {
 
           .tp-popular-nav {
             display: flex;
-          }
-
-          .tp-popular-products-slider-wrapper {
-            padding: 20px 0 40px;
-            margin: 0;
-            position: relative;
-            display: flex;
-            justify-content: center;
-          }
-
-          .tp-popular-products-slider {
-            overflow: hidden !important;
-            padding: 10px 20px !important;
-            width: 100% !important;
-            max-width: 400px !important;
-            margin: 0 auto !important;
-          }
-
-          .tp-popular-products-slider .swiper-wrapper {
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-          }
-
-          .tp-popular-products-slider .swiper-slide {
-            width: 100% !important;
-            flex-shrink: 0 !important;
-            display: flex !important;
-            justify-content: center !important;
-            padding: 0 !important;
-          }
-
-          .tp-popular-products-slider .swiper-slide .tp-popular-product-card {
-            width: 90% !important;
-            max-width: 350px !important;
-            margin: 0 auto !important;
           }
         }
 
