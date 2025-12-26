@@ -47,9 +47,8 @@ export default function AboutSection({
     <section className={`tp-about ${variant === 'dark' ? 'tp-about--dark' : ''}`}>
       <div className="container">
         <div className="tp-about__grid">
-          {/* LEFT */}
           <div className="tp-about__left">
-            {/* ✅ Header stays FIRST on both desktop + mobile */}
+            {/* Header */}
             <div className="tp-about__head">
               <span className="tp-about__eyebrow">
                 <span className="tp-about__line" />
@@ -59,7 +58,7 @@ export default function AboutSection({
               <h2 className="tp-about__title">{title}</h2>
             </div>
 
-            {/* ✅ Image is on RIGHT on desktop, but becomes AFTER heading on mobile */}
+            {/* Image */}
             <div className="tp-about__right">
               <div className="tp-about__imgWrap">
                 <Image
@@ -76,7 +75,7 @@ export default function AboutSection({
               </div>
             </div>
 
-            {/* ✅ Description + CTA + Pills come AFTER image on mobile */}
+            {/* Body */}
             <div className="tp-about__body">
               <p className="tp-about__desc">{description}</p>
 
@@ -100,7 +99,7 @@ export default function AboutSection({
 
       <style jsx global>{`
         /* =========================
-           ABOUT SECTION (WHITE BG)
+           ABOUT SECTION
            ========================= */
 
         .tp-about {
@@ -116,7 +115,7 @@ export default function AboutSection({
             linear-gradient(135deg, #071827 0%, #0b2338 45%, #071827 100%);
         }
 
-        /* ✅ DESKTOP LAYOUT (no visual change) */
+        /* Desktop layout */
         .tp-about__grid {
           display: grid;
           grid-template-columns: 1fr;
@@ -317,7 +316,7 @@ export default function AboutSection({
           opacity: 0.6;
         }
 
-        /* DARK variant text tuning */
+        /* Dark variant text tuning */
         .tp-about--dark .tp-about__title,
         .tp-about--dark .tp-about__pill {
           color: #e7edf6;
@@ -335,9 +334,9 @@ export default function AboutSection({
         }
 
         /* =========================
-           ✅ MOBILE ORDER FIX
-           Heading -> Image -> Description -> Pills
-           (Desktop unchanged)
+           ✅ RESPONSIVE (Compact + clean on mobile)
+           Order stays: Heading -> Image -> Body
+           Desktop unchanged
            ========================= */
 
         @media (max-width: 1200px) {
@@ -351,14 +350,13 @@ export default function AboutSection({
 
         @media (max-width: 992px) {
           .tp-about {
-            padding: 60px 0;
+            padding: 56px 0;
           }
 
-          /* one column, but keep order */
           .tp-about__left {
             grid-template-columns: 1fr;
-            grid-template-rows: auto auto auto; /* head, image, body */
-            gap: 18px;
+            grid-template-rows: auto auto auto;
+            gap: 16px; /* more compact */
             align-items: start;
           }
 
@@ -377,28 +375,48 @@ export default function AboutSection({
             grid-row: 3;
           }
 
-          .tp-about__imgWrap {
-            height: 340px;
-          }
-
-          /* keep pills like desktop (wrap), NOT full width */
-          .tp-about__pill {
-            width: auto;
-          }
-        }
-
-        @media (max-width: 576px) {
-          .tp-about {
-            padding: 52px 0;
+          .tp-about__eyebrow {
+            font-size: 11px;
+            padding: 6px 12px;
+            margin-bottom: 12px;
           }
 
           .tp-about__title {
-            font-size: 28px;
+            font-size: 30px;
+            margin-bottom: 10px;
+          }
+
+          .tp-about__desc {
+            font-size: 14px;
+            line-height: 1.75;
+            margin-bottom: 14px;
+            max-width: 100%;
+          }
+
+          .tp-about__brand {
+            font-size: 20px; /* was 25 -> compact */
+          }
+
+          .tp-about__ctaRow {
+            margin-bottom: 14px;
+          }
+
+          .tp-about__cta {
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 13px;
           }
 
           .tp-about__imgWrap {
-            height: 260px;
-            border-radius: 18px;
+            height: 320px;
+            border-radius: 20px;
+          }
+
+          .tp-about__badge {
+            top: 14px;
+            right: 14px;
+            padding: 7px 12px;
+            font-size: 11px;
           }
 
           .tp-about__features {
@@ -408,8 +426,79 @@ export default function AboutSection({
           .tp-about__pill {
             padding: 10px 12px;
             border-radius: 14px;
-            font-size: 13px;
-            width: auto; /* ✅ keep like desktop */
+            font-size: 12px;
+          }
+        }
+
+        @media (max-width: 576px) {
+          .tp-about {
+            padding: 44px 0; /* tighter section */
+          }
+
+          .tp-about__line {
+            width: 22px;
+          }
+
+          .tp-about__title {
+            font-size: 26px;
+            line-height: 1.18;
+          }
+
+          .tp-about__desc {
+            font-size: 13.5px;
+            line-height: 1.7;
+            margin-bottom: 12px;
+          }
+
+          .tp-about__brand {
+            font-size: 18px;
+            white-space: normal; /* prevent overflow on small phones */
+          }
+
+          .tp-about__imgWrap {
+            height: 240px;
+            border-radius: 18px;
+            box-shadow: 0 18px 36px rgba(15, 34, 53, 0.09);
+          }
+
+          .tp-about__img {
+            transform: scale(1);
+          }
+
+          .tp-about__badge {
+            top: 12px;
+            right: 12px;
+            padding: 6px 10px;
+            font-size: 10px;
+            letter-spacing: 0.6px;
+          }
+
+          .tp-about__cta {
+            width: 100%;
+            justify-content: center;
+            padding: 11px 14px;
+            border-radius: 12px;
+          }
+
+          .tp-about__features {
+            gap: 8px;
+            margin-top: 8px;
+          }
+
+          .tp-about__pill {
+            padding: 9px 11px;
+            border-radius: 13px;
+            font-size: 12px;
+            box-shadow: 0 8px 18px rgba(15, 34, 53, 0.05);
+          }
+        }
+
+        @media (max-width: 380px) {
+          .tp-about__title {
+            font-size: 24px;
+          }
+          .tp-about__imgWrap {
+            height: 220px;
           }
         }
       `}</style>

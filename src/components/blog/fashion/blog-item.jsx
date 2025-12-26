@@ -66,9 +66,6 @@ export default function BlogItem({ blog }) {
       {/* CONTENT */}
       <div className="tp-blog-content-2 has-thumbnail">
         <div className="tp-blog-meta-2">
-          <span>
-            <Tags />
-          </span>
           {tags.slice(0, 3).map((t, i) => (
             <a key={`${String(t)}-${i}`} href="#">
               {String(t)}

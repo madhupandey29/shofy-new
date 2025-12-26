@@ -183,7 +183,7 @@ const Footer = () => {
           <div className="age-container">
             <div className="age-grid" role="list">
               <div className="age-col" role="listitem">
-                <div className="age-widget">
+                <div>
                   <div className="age-addressBoard" aria-label="Company addresses">
                     {addresses.map((a, idx) => {
                       const lines = splitLines(a.address);
@@ -346,11 +346,7 @@ const Footer = () => {
             <div className="age-bottomWrap">
               <div className="age-topbar" />
               <p className="age-copy">
-                <strong>© {new Date().getFullYear()} Amrita Global Enterprises</strong>
-                <span className="age-dot">•</span>
-                All rights reserved
-                <span className="age-dot">•</span>
-                Crafting quality textiles for a better tomorrow
+                <strong>© {new Date().getFullYear()}Amrita Global Enterprises. All rights reserved under applicable laws.</strong>
               </p>
 
               <div className="age-trust">
@@ -512,14 +508,14 @@ const Footer = () => {
         /* ✅ MOBILE: better padding + center menus + center socials */
         @media (max-width:640px){
           .age-container{ padding: 0 20px; } /* more left/right */
-          .age-widget{ text-align:center; }
-          .age-title::after{ left:50%; transform:translateX(-50%); } /* underline centered */
+          .age-widget{ padding: 5px 18px; }
+          .age-title::after{ left:8%; transform:translateX(-50%); } /* underline centered */
 
           .age-list li{ margin: 0 0 12px; }
           .age-addressBoard{ padding:16px 14px 10px; }
-          .age-addressTitle{ justify-content:center; }
-          .age-talkRow{ justify-content:center; }
-          .age-addrRow{ justify-content:center; text-align:left; }
+          .age-addressTitle{ justify-content:flex-start; }
+          .age-talkRow{ justify-content:flex-start; }
+          .age-addrRow{justify-content:flex-start; text-align:left; }
           .age-social{ justify-content:center; } /* ✅ socials centered */
         }
 

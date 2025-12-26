@@ -19,13 +19,12 @@ const DATA = [
 const slider_setting = {
   slidesPerView: 1,
   spaceBetween: 14,
-  loop: false, // Disable loop to prevent blank slides
+  loop: false,
   pagination: { el: '.tp-testimonial-slider-dot', clickable: true },
   navigation: { nextEl: '.tp-testimonial-slider-button-next', prevEl: '.tp-testimonial-slider-button-prev' },
   keyboard: { enabled: true, onlyInViewport: true },
   autoplay: { delay: 5200, disableOnInteraction: false, pauseOnMouseEnter: true },
   a11y: { enabled: true },
-  // Enhanced touch/swipe settings
   touchRatio: 1.5,
   touchAngle: 45,
   simulateTouch: true,
@@ -42,18 +41,9 @@ const slider_setting = {
   passiveListeners: false,
   watchSlidesProgress: true,
   watchSlidesVisibility: true,
-  breakpoints: { 
-    640: { 
-      slidesPerView: 2, 
-      spaceBetween: 14,
-      loop: false,
-    }, 
-    1024: { 
-      slidesPerView: 3, 
-      spaceBetween: 16,
-      loop: true,
-      loopAdditionalSlides: 1,
-    } 
+  breakpoints: {
+    640: { slidesPerView: 2, spaceBetween: 14, loop: false },
+    1024: { slidesPerView: 3, spaceBetween: 16, loop: true, loopAdditionalSlides: 1 }
   }
 };
 
@@ -62,14 +52,12 @@ const nonEmpty = (v) => (Array.isArray(v) ? v.length > 0 : v !== undefined && v 
 function FashionTestimonial() {
   const swiperRef = useRef(null);
 
-  // Handle mobile swiper initialization
   useEffect(() => {
     const handleResize = () => {
       if (swiperRef.current && swiperRef.current.swiper) {
         swiperRef.current.swiper.update();
       }
     };
-
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -83,8 +71,6 @@ function FashionTestimonial() {
   return (
     <section className="tp-testimonial-area testimonial--age-bg" aria-labelledby="testimonial-heading">
       <div className="container">
-
-        {/* Header (unchanged) */}
         <div className="row justify-content-center">
           <div className="col-xl-8 text-center">
             <span className="age-badge"><i aria-hidden className="age-badge-dot" />Verified Industry Feedback</span>
@@ -92,7 +78,6 @@ function FashionTestimonial() {
           </div>
         </div>
 
-        {/* Cards */}
         <div className="row justify-content-center mt-16">
           <div className="col-xl-12">
             <div className="p-relative">
@@ -109,7 +94,6 @@ function FashionTestimonial() {
                 {DATA.map((item, idx) => (
                   <SwiperSlide key={item.id} className="slide-auto testimonial-slide" aria-label={`Testimonial ${idx + 1}`}>
                     <article className="age-card h-eq">
-                      {/* top row */}
                       <div className="age-top">
                         <div className="age-stars" aria-hidden />
                         <div className="age-rating" aria-label={`${item.review} stars`}>
@@ -117,26 +101,25 @@ function FashionTestimonial() {
                         </div>
                         <span className="age-verified">
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--tp-theme-secondary)" aria-hidden>
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.85L18.18 22 12 18.77 5.82 22 7 14.12l-5-4.85 6.91-1.01L12 2z"/>
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.85L18.18 22 12 18.77 5.82 22 7 14.12l-5-4.85 6.91-1.01L12 2z" />
                           </svg>
                           VERIFIED
                         </span>
                       </div>
 
-                      {/* quote */}
                       <p className="age-quote">&ldquo;{item.desc}&rdquo;</p>
 
-                      {/* buyer */}
                       <div className="age-client">
                         <div className="age-industry">{nonEmpty(item.industry) ? item.industry : 'Verified Buyer'}</div>
                         <div className="age-dot" />
                         <div className="age-location">{nonEmpty(item.location) ? item.location : 'India'}</div>
                       </div>
 
-                      {/* tags */}
                       {nonEmpty(item.tags) && (
                         <div className="age-tags" aria-label="Tags">
-                          {item.tags.slice(0, 3).map((t, i) => (<span key={i} className="age-chip">{t}</span>))}
+                          {item.tags.slice(0, 3).map((t, i) => (
+                            <span key={i} className="age-chip">{t}</span>
+                          ))}
                         </div>
                       )}
                     </article>
@@ -144,15 +127,18 @@ function FashionTestimonial() {
                 ))}
               </Swiper>
 
-              {/* Arrows & Dots (unchanged) */}
-              <button className="tp-testimonial-slider-button-prev d-none d-md-grid age-arrow" aria-label="Previous testimonial"><PrevLongArrTwo /></button>
-              <button className="tp-testimonial-slider-button-next d-none d-md-grid age-arrow" aria-label="Next testimonial"><ArrowRightLong /></button>
+              <button className="tp-testimonial-slider-button-prev d-none d-md-grid age-arrow" aria-label="Previous testimonial">
+                <PrevLongArrTwo />
+              </button>
+              <button className="tp-testimonial-slider-button-next d-none d-md-grid age-arrow" aria-label="Next testimonial">
+                <ArrowRightLong />
+              </button>
+
               <div className="tp-testimonial-slider-dot text-center mt-10 age-dots" style={dotsStyle} />
             </div>
           </div>
         </div>
 
-        {/* Metrics (unchanged from your last good version) */}
         <div className="row justify-content-center mt-24">
           <div className="col-xl-10">
             <div className="age-metric-grid small-white">
@@ -174,49 +160,50 @@ function FashionTestimonial() {
       </div>
 
       <style jsx>{`
-        /* spacing stay compact */
-        .tp-testimonial-area{ padding:38px 0 46px; }
-        .mt-10{ margin-top:10px; }
-        .mt-16{ margin-top:16px; }
-        .mt-24{ margin-top:24px; }
+        .tp-testimonial-area{ padding: 34px 0 44px; }
         .testimonial--age-bg{ background: var(--tp-theme-1, #112439); }
+
+        .mt-10{ margin-top: 10px; }
+        .mt-16{ margin-top: 16px; }
+        .mt-24{ margin-top: 24px; }
 
         .age-badge{
           display:inline-flex; align-items:center; gap:6px;
-          padding:5px 10px; font:600 10px/1 var(--tp-ff-roboto);
+          padding:5px 10px;
+          font:700 10px/1 var(--tp-ff-roboto);
           color: var(--tp-theme-secondary);
           background: color-mix(in srgb, var(--tp-theme-secondary) 12%, transparent);
           border: 1px solid color-mix(in srgb, var(--tp-theme-secondary) 30%, transparent);
-          border-radius:999px; text-transform:uppercase; letter-spacing:.5px;
+          border-radius:999px;
+          text-transform:uppercase;
+          letter-spacing:.5px;
         }
         .age-badge-dot{ width:5px; height:5px; border-radius:999px; background: var(--tp-theme-secondary); }
-        .age-hl{ margin-top:10px; color: var(--tp-common-white); font-family: var(--tp-ff-jost); font-weight:700; font-size:30px; line-height:1.18; }
+        .age-hl{
+          margin-top:10px;
+          color: var(--tp-common-white);
+          font-family: var(--tp-ff-jost);
+          font-weight: 800;
+          font-size: 30px;
+          line-height: 1.18;
+        }
 
-        /* equalize slides */
         .slide-auto{ height:auto; }
         :global(.tp-testimonial-slider-active .swiper-wrapper){ align-items:stretch; }
         .h-eq{ display:flex; flex-direction:column; height:100%; }
 
-        /* Testimonial Slide Styling */
-        .testimonial-slide {
-          height: auto !important;
-          display: flex !important;
-          flex-direction: column !important;
-        }
+        .testimonial-slide{ height:auto !important; display:flex !important; flex-direction:column !important; }
 
-        /* ===== Card (refined) ===== */
         .age-card{
           position:relative;
           border-radius:14px;
           padding:18px 18px 16px;
           background: var(--tp-common-white);
           border: 1px solid color-mix(in srgb, var(--tp-grey-3) 40%, transparent);
-          box-shadow:
-            0 8px 22px rgba(0,0,0,.10);
+          box-shadow: 0 8px 22px rgba(0,0,0,.10);
           transition: transform .2s ease, box-shadow .2s ease;
         }
         .age-card::after{
-          /* soft inner highlight ring to replace the bottom line */
           content:'';
           position:absolute; inset:0;
           border-radius:14px;
@@ -225,35 +212,34 @@ function FashionTestimonial() {
         }
         .age-card:hover{ transform:translateY(-3px); box-shadow:0 12px 28px rgba(0,0,0,.14); }
 
-        .age-top{
-          display:flex; align-items:center; justify-content:space-between;
-          gap:10px; margin-bottom:10px;
-        }
+        .age-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
         .age-rating{ display:flex; align-items:center; }
+
         .age-verified{
           display:inline-flex; align-items:center; gap:4px;
-          font:600 10px/1 var(--tp-ff-roboto);
+          font:700 10px/1 var(--tp-ff-roboto);
           color: var(--tp-theme-secondary);
           background: color-mix(in srgb, var(--tp-theme-secondary) 12%, transparent);
-          padding:5px 8px; border-radius:999px;
-          text-transform:uppercase; letter-spacing:.6px;
+          padding:5px 8px;
+          border-radius:999px;
+          text-transform:uppercase;
+          letter-spacing:.6px;
           border:1px solid color-mix(in srgb, var(--tp-theme-secondary) 22%, transparent);
           white-space:nowrap;
         }
 
         .age-quote{
           color: var(--tp-text-1);
-          font-size:14px; line-height:1.55; font-weight:500;
+          font-size:14px;
+          line-height:1.55;
+          font-weight:600;
           margin:6px 0 12px;
-          min-height:56px; /* keep equal height rows */
+          min-height: 56px;
         }
 
-        .age-client{
-          display:flex; align-items:center; gap:8px;
-          margin:0 0 10px;
-        }
-        .age-industry{ color: var(--tp-theme-primary); font-weight:700; font-size:14.5px; }
-        .age-location{ color: var(--tp-text-2); font-size:12.5px; font-weight:600; }
+        .age-client{ display:flex; align-items:center; gap:8px; margin:0 0 10px; }
+        .age-industry{ color: var(--tp-theme-primary); font-weight:800; font-size:14.5px; }
+        .age-location{ color: var(--tp-text-2); font-size:12.5px; font-weight:700; }
         .age-dot{ width:4px; height:4px; border-radius:999px; background: var(--tp-grey-5, #cfd6e4); opacity:.8; }
 
         .age-tags{ display:flex; gap:6px; flex-wrap:wrap; }
@@ -263,7 +249,9 @@ function FashionTestimonial() {
           background: var(--tp-grey-1);
           border:1px solid var(--tp-grey-3);
           color: var(--tp-text-2);
-          font-weight:600; font-size:11px; white-space:nowrap;
+          font-weight:700;
+          font-size:11px;
+          white-space:nowrap;
           transition: background .2s ease, color .2s ease, border-color .2s ease;
         }
         .age-chip:hover{
@@ -272,111 +260,89 @@ function FashionTestimonial() {
           color: var(--tp-common-white);
         }
 
-        /* arrows & dots */
         .age-arrow{
-          background: var(--tp-common-white)!important; color: var(--tp-theme-primary)!important;
-          width:38px; height:38px; border-radius:50%; display:grid; place-items:center;
-          box-shadow:0 4px 14px rgba(0,0,0,.10); position:absolute; top:50%; transform:translateY(-50%); z-index:3;
+          background: var(--tp-common-white)!important;
+          color: var(--tp-theme-primary)!important;
+          width:38px; height:38px;
+          border-radius:50%;
+          display:grid; place-items:center;
+          box-shadow:0 4px 14px rgba(0,0,0,.10);
+          position:absolute; top:50%;
+          transform:translateY(-50%);
+          z-index:3;
         }
         .tp-testimonial-slider-button-prev.age-arrow{ left:6px; }
         .tp-testimonial-slider-button-next.age-arrow{ right:6px; }
         .age-dots :global(.swiper-pagination-bullet){ margin:0 4px!important; }
 
-        /* metrics (your latest style kept) */
         .age-metric-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
         .age-metric-grid.small-white .age-metric-box{
-          background: #00000033; color: var(--tp-theme-secondary);
-          border-radius:10px; padding:16px 12px; text-align:center;
+          background: #00000033;
+          color: var(--tp-theme-secondary);
+          border-radius:10px;
+          padding:16px 12px;
+          text-align:center;
           box-shadow:0 4px 12px rgba(0,0,0,.08);
         }
-        .age-metric-grid.small-white .val{ font-weight:800; font-size:20px; margin-bottom:6px; line-height:1.1; }
-        .age-metric-grid.small-white .key{ font-size:12.5px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; }
+        .age-metric-grid.small-white .val{ font-weight:900; font-size:20px; margin-bottom:6px; line-height:1.1; }
+        .age-metric-grid.small-white .key{ font-size:12.5px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; }
 
-        /* responsive */
         @media (max-width: 991.98px){
           .age-metric-grid{ grid-template-columns:repeat(2,1fr); }
         }
-        @media (max-width: 575.98px){
-          .age-card{ padding:16px 14px; }
-          .age-quote{ min-height:60px; font-size:13.5px; }
-          .age-metric-grid{ grid-template-columns:1fr; gap:8px; }
+
+        /* ✅ MOBILE: compact header + compact card + safe swiper padding */
+        @media (max-width: 768px){
+          .tp-testimonial-area{ padding: 30px 0 38px; }
+          .age-hl{ font-size: 24px; line-height: 1.16; }
+
+          /* keep swiper stable (don’t override widths too hard) */
+          :global(.tp-testimonial-slider-active){
+            padding: 6px 10px !important;
+            overflow: hidden !important;
+          }
+
+          .age-card{
+            padding: 14px 14px 12px;
+            border-radius: 14px;
+          }
+
+          .age-quote{
+            font-size: 13.5px;
+            line-height: 1.5;
+            min-height: 0; /* ✅ lets card shrink on small content */
+            margin-bottom: 10px;
+          }
+
+          .age-industry{ font-size: 13.5px; }
+          .age-location{ font-size: 12px; }
+
+          .age-chip{
+            padding: 4px 9px;
+            font-size: 10.5px;
+          }
         }
 
-        /* ===== MOBILE SWIPER FIXES ===== */
-        @media (max-width: 768px) {
-          .swiper {
-            touch-action: pan-y !important;
-            overflow: visible !important;
+        @media (max-width: 575.98px){
+          .age-hl{ font-size: 22px; }
+
+          :global(.tp-testimonial-slider-active){
+            padding: 6px 8px !important;
           }
-          
-          .swiper-wrapper {
-            touch-action: pan-y !important;
-            display: flex !important;
-            align-items: stretch !important;
-          }
-          
-          .swiper-slide {
-            touch-action: pan-y !important;
-            height: auto !important;
-            display: flex !important;
-            flex-direction: column !important;
-            width: 100% !important;
-            flex-shrink: 0 !important;
-          }
-          
-          .tp-testimonial-slider-active {
-            touch-action: pan-y !important;
-            overflow: visible !important;
-            width: 100% !important;
-            padding: 10px 20px !important;
-          }
-          
-          .tp-testimonial-slider-active .swiper-wrapper {
-            touch-action: pan-y !important;
-            height: auto !important;
-          }
-          
-          .tp-testimonial-slider-active .swiper-slide {
-            touch-action: pan-y !important;
-            height: auto !important;
-            width: 100% !important;
-            flex-shrink: 0 !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-          }
-          
-          .age-card {
-            width: 100% !important;
-            max-width: 100% !important;
-            height: auto !important;
-            display: flex !important;
-            flex-direction: column !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-          }
-          
-          .p-relative {
-            padding: 0;
-            margin: 0;
-          }
-          
-          .tp-testimonial-slider-button-prev.age-arrow {
-            left: 15px;
-          }
-          
-          .tp-testimonial-slider-button-next.age-arrow {
-            right: 15px;
-          }
+
+          .age-card{ padding: 13px 12px 11px; }
+          .age-verified{ padding: 4px 7px; font-size: 9.5px; }
+
+          .age-metric-grid{ grid-template-columns: 1fr; gap: 8px; }
+          .age-metric-grid.small-white .age-metric-box{ padding: 12px 10px; }
+          .age-metric-grid.small-white .val{ font-size: 18px; }
+          .age-metric-grid.small-white .key{ font-size: 12px; }
         }
-        
-        @media (max-width: 576px) {
-          .tp-testimonial-slider-active {
-            padding: 10px 15px !important;
-          }
-          
-          .tp-testimonial-slider-active .swiper-slide {
-            width: 100% !important;
-          }
+
+        @media (max-width: 380px){
+          .age-hl{ font-size: 21px; }
+          .age-quote{ font-size: 13px; }
+          .age-industry{ font-size: 13px; }
         }
       `}</style>
     </section>

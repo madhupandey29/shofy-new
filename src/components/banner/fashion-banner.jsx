@@ -7,27 +7,24 @@ import Link from 'next/link';
 const HERO_VIDEO = '/videos/canva_mix.mp4';
 const STATIC_FALLBACK = '/assets/img/hero/hero-bg.jpg';
 
-const EYEBROW  = 'Your One-Stop Fabric Destination';
-const TITLE    = 'India\'s Trusted Fabric Manufacturer';
-const SUBTITLE = 'From timeless cottons to new-age blends — explore fabrics that define style and durability.';
-const CTA      = { href: '/shop', label: 'Discover Now' };
+const EYEBROW = 'Your One-Stop Fabric Destination';
+const TITLE = "India's Trusted Fabric Manufacturer";
+const SUBTITLE =
+  'From timeless cottons to new-age blends — explore fabrics that define style and durability.';
+const CTA = { href: '/shop', label: 'Discover Now' };
 
 export default function FashionBanner() {
   const [videoLoaded, setVideoLoaded] = useState(false);
 
   useEffect(() => {
-    // Video loaded state for smoother transitions
-    const timer = setTimeout(() => {
-      setVideoLoaded(true);
-    }, 500);
-    return () => clearTimeout(timer);
+    const t = setTimeout(() => setVideoLoaded(true), 400);
+    return () => clearTimeout(t);
   }, []);
 
   return (
     <section className="fashion-hero" role="banner" aria-label="Hero Banner">
-      {/* Background Container */}
-      <div className="hero-bg">
-        {/* Video Background */}
+      {/* Background */}
+      <div className="hero-bg" aria-hidden="true">
         <video
           className={`hero-video ${videoLoaded ? 'loaded' : ''}`}
           autoPlay
@@ -35,72 +32,74 @@ export default function FashionBanner() {
           loop
           playsInline
           controls={false}
-          preload="auto"
+          preload="metadata"
           onLoadedData={() => setVideoLoaded(true)}
           onError={(e) => {
             console.error('Video loading error:', e);
-            e.target.style.display = 'none';
+            // hide video, fallback will show
+            e.currentTarget.style.display = 'none';
           }}
         >
           <source src={HERO_VIDEO} type="video/mp4" />
-          Your browser does not support the video tag.
         </video>
 
-        {/* Fallback Image */}
-        <div 
+        <div
           className="hero-fallback"
           style={{ backgroundImage: `url(${STATIC_FALLBACK})` }}
-          aria-hidden="true"
         />
 
-        {/* Modern Gradient Overlays */}
         <div className="bg-overlay primary-overlay" />
         <div className="bg-overlay accent-overlay" />
       </div>
 
-      {/* Content Container */}
+      {/* Content */}
       <div className="container">
         <div className="hero-content">
-          {/* Top Badge */}
           <div className="eyebrow-badge">
             <span className="badge-text">{EYEBROW}</span>
             <div className="badge-line" />
           </div>
 
-          {/* Main Title */}
           <h1 className="main-title">
-            <span className="title-line">India's Trusted</span>
+            <span className="title-line">India&apos;s Trusted</span>
             <span className="title-line accent-line">Fabric Manufacturer</span>
           </h1>
 
-          {/* Subtitle */}
           <p className="subtitle">{SUBTITLE}</p>
 
-          {/* CTA Section */}
           <div className="cta-section">
-            <Link href={CTA.href} className="cta-btn">
+            <Link href={CTA.href} className="cta-btn" aria-label={CTA.label}>
               <span className="btn-text">{CTA.label}</span>
-              <span className="btn-icon">
+              <span className="btn-icon" aria-hidden="true">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path
+                    d="M5 12H19M19 12L12 5M19 12L12 19"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </span>
             </Link>
           </div>
 
-          {/* Trust Metrics - Modern Style */}
-          <div className="metrics-grid">
-            <div className="metric-item">
+          <div className="metrics-grid" role="list" aria-label="Trust Metrics">
+            <div className="metric-item" role="listitem">
               <div className="metric-number">500+</div>
               <div className="metric-label">Fabric Varieties</div>
             </div>
-            <div className="metric-divider" />
-            <div className="metric-item">
+
+            <div className="metric-divider" aria-hidden="true" />
+
+            <div className="metric-item" role="listitem">
               <div className="metric-number">25+</div>
               <div className="metric-label">Years Experience</div>
             </div>
-            <div className="metric-divider" />
-            <div className="metric-item">
+
+            <div className="metric-divider" aria-hidden="true" />
+
+            <div className="metric-item" role="listitem">
               <div className="metric-number">1000+</div>
               <div className="metric-label">Happy Clients</div>
             </div>
@@ -122,7 +121,7 @@ export default function FashionBanner() {
           background: var(--tp-theme-1);
         }
 
-        /* ===== BACKGROUND STYLES ===== */
+        /* ===== BACKGROUND ===== */
         .hero-bg {
           position: absolute;
           inset: 0;
@@ -131,12 +130,13 @@ export default function FashionBanner() {
 
         .hero-video {
           position: absolute;
+          inset: 0;
           width: 100%;
           height: 100%;
-          object-fit: none;
+          object-fit: none; /* IMPORTANT: cover for mobile */
           object-position: center;
           opacity: 0;
-          transition: opacity 1s ease;
+          transition: opacity 0.9s ease;
         }
 
         .hero-video.loaded {
@@ -169,13 +169,13 @@ export default function FashionBanner() {
 
         .accent-overlay {
           background: radial-gradient(
-            circle at 30% 50%,
+            circle at 30% 45%,
             rgba(214, 167, 75, 0.15) 0%,
             transparent 70%
           );
         }
 
-        /* ===== CONTENT CONTAINER ===== */
+        /* ===== CONTENT ===== */
         .container {
           position: relative;
           z-index: 2;
@@ -190,13 +190,13 @@ export default function FashionBanner() {
           color: var(--tp-common-white);
         }
 
-        /* ===== EYEBROW BADGE ===== */
+        /* Eyebrow */
         .eyebrow-badge {
           display: inline-flex;
           flex-direction: column;
           align-items: center;
           gap: 12px;
-          margin-bottom: 40px;
+          margin-bottom: 36px;
         }
 
         .badge-text {
@@ -214,12 +214,12 @@ export default function FashionBanner() {
           background: var(--tp-theme-secondary);
         }
 
-        /* ===== MAIN TITLE ===== */
+        /* Title */
         .main-title {
           font-family: var(--tp-ff-jost);
           font-weight: 700;
-          line-height: 1.1;
-          margin-bottom: 24px;
+          line-height: 1.08;
+          margin: 0 0 18px;
         }
 
         .title-line {
@@ -229,44 +229,51 @@ export default function FashionBanner() {
         }
 
         .accent-line {
-          background: linear-gradient(135deg, var(--tp-common-white) 30%, var(--tp-theme-secondary) 100%);
+          background: linear-gradient(
+            135deg,
+            var(--tp-common-white) 30%,
+            var(--tp-theme-secondary) 100%
+          );
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
         }
 
-        /* ===== SUBTITLE ===== */
+        /* Subtitle */
         .subtitle {
-          max-width: 600px;
-          margin: 0 auto 40px;
+          max-width: 640px;
+          margin: 0 auto 34px;
           font-size: 18px;
-          line-height: 1.6;
+          line-height: 1.55;
           color: rgba(255, 255, 255, 0.9);
           font-family: var(--tp-ff-roboto);
           font-weight: 400;
         }
 
-        /* ===== CTA BUTTON ===== */
+        /* CTA */
         .cta-section {
-          margin-bottom: 50px;
+          margin-bottom: 42px;
         }
 
         .cta-btn {
           display: inline-flex;
           align-items: center;
+          justify-content: center;
           gap: 12px;
           padding: 18px 42px;
           background: var(--tp-theme-primary);
           color: var(--tp-common-white);
           border: 2px solid transparent;
-          border-radius: 8px;
+          border-radius: 10px;
           font-size: 16px;
           font-weight: 600;
           text-decoration: none;
           font-family: var(--tp-ff-jost);
-          transition: all 0.3s ease;
+          transition: transform 0.25s ease, box-shadow 0.25s ease,
+            border-color 0.25s ease;
           position: relative;
           overflow: hidden;
+          min-height: 48px;
         }
 
         .cta-btn::before {
@@ -275,7 +282,7 @@ export default function FashionBanner() {
           inset: 0;
           background: var(--tp-theme-secondary);
           opacity: 0;
-          transition: opacity 0.3s ease;
+          transition: opacity 0.25s ease;
         }
 
         .cta-btn:hover {
@@ -288,33 +295,35 @@ export default function FashionBanner() {
           opacity: 1;
         }
 
-        .btn-text, .btn-icon {
+        .btn-text,
+        .btn-icon {
           position: relative;
           z-index: 1;
         }
 
         .btn-icon {
-          transition: transform 0.3s ease;
+          transition: transform 0.25s ease;
         }
 
         .cta-btn:hover .btn-icon {
           transform: translateX(4px);
         }
 
-        /* ===== METRICS GRID ===== */
+        /* Metrics */
         .metrics-grid {
           display: inline-flex;
           align-items: center;
-          gap: 32px;
-          padding: 24px 40px;
-          background: rgba(255, 255, 255, 0.05);
+          gap: 28px;
+          padding: 22px 34px;
+          background: rgba(255, 255, 255, 0.06);
           backdrop-filter: blur(10px);
-          border-radius: 12px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 14px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
         }
 
         .metric-item {
           text-align: center;
+          min-width: 120px;
         }
 
         .metric-number {
@@ -323,14 +332,15 @@ export default function FashionBanner() {
           color: var(--tp-theme-secondary);
           font-family: var(--tp-ff-jost);
           margin-bottom: 4px;
+          line-height: 1;
         }
 
         .metric-label {
           font-size: 12px;
-          font-weight: 500;
+          font-weight: 600;
           letter-spacing: 1px;
           text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.8);
+          color: rgba(255, 255, 255, 0.82);
           font-family: var(--tp-ff-roboto);
         }
 
@@ -340,14 +350,7 @@ export default function FashionBanner() {
           background: rgba(255, 255, 255, 0.2);
         }
 
-        /* ===== RESPONSIVE DESIGN ===== */
-        
-        /* Large Desktop */
-        @media (min-width: 1400px) {
-          .title-line {
-            font-size: 4rem;
-          }
-        }
+        /* ===== RESPONSIVE ===== */
 
         /* Desktop */
         @media (max-width: 1200px) {
@@ -355,163 +358,142 @@ export default function FashionBanner() {
             min-height: 650px;
             max-height: 800px;
           }
-          
           .title-line {
             font-size: 3.2rem;
           }
-          
-          .metrics-grid {
-            gap: 28px;
-            padding: 20px 36px;
-          }
         }
 
-        /* Tablet Landscape */
+        /* Tablet */
         @media (max-width: 992px) {
           .fashion-hero {
-            height: auto;
+            height: auto; /* allow hero to fit content */
             min-height: 600px;
             max-height: none;
-            padding: 100px 0;
+            padding: 96px 0;
           }
-          
           .title-line {
-            font-size: 2.8rem;
+            font-size: 2.7rem;
           }
-          
           .subtitle {
             font-size: 17px;
-            max-width: 500px;
+            margin-bottom: 30px;
+          }
+          .cta-section {
             margin-bottom: 36px;
           }
-          
-          .cta-btn {
-            padding: 16px 36px;
-            font-size: 15px;
-          }
-          
           .metrics-grid {
-            gap: 24px;
-            padding: 18px 32px;
+            gap: 20px;
+            padding: 18px 28px;
           }
-          
           .metric-number {
             font-size: 24px;
           }
         }
 
-        /* Tablet Portrait */
-        @media (max-width: 768px) {
-          .fashion-hero {
-            padding: 80px 0;
-            min-height: 550px;
-          }
-          
-          .eyebrow-badge {
-            margin-bottom: 32px;
-          }
-          
-          .badge-text {
-            font-size: 13px;
-            letter-spacing: 1.5px;
-          }
-          
-          .title-line {
-            font-size: 2.4rem;
-          }
-          
-          .subtitle {
-            font-size: 16px;
-            margin-bottom: 32px;
-            padding: 0 20px;
-          }
-          
-          .cta-section {
-            margin-bottom: 40px;
-          }
-          
-          .metrics-grid {
-            flex-direction: column;
-            gap: 20px;
-            padding: 24px;
-            max-width: 280px;
-          }
-          
-          .metric-divider {
-            width: 60px;
-            height: 1px;
-          }
-          
-          .metric-item {
-            padding: 0 20px;
-          }
-        }
-
-        /* Mobile */
+        /* Mobile + short hero (THIS is the key) */
         @media (max-width: 576px) {
           .fashion-hero {
-            padding: 60px 0;
-            min-height: 500px;
+            height: auto; /* stop forcing 100vh */
+            min-height: 0; /* let it shrink */
+            max-height: none;
+            padding: 68px 0 56px; /* smaller, still comfortable */
           }
-          
+
           .eyebrow-badge {
-            margin-bottom: 28px;
+            margin-bottom: 18px; /* smaller */
+            gap: 8px;
           }
-          
-          .title-line {
-            font-size: 2rem;
-          }
-          
-          .subtitle {
-            font-size: 15px;
-            margin-bottom: 28px;
-            padding: 0;
-          }
-          
-          .cta-btn {
-            padding: 14px 32px;
-            font-size: 14px;
-          }
-          
-          .metrics-grid {
-            padding: 20px;
-            max-width: 260px;
-          }
-          
-          .metric-number {
-            font-size: 22px;
-          }
-          
-          .metric-label {
-            font-size: 11px;
-          }
-        }
 
-        /* Small Mobile */
-        @media (max-width: 400px) {
-          .title-line {
-            font-size: 1.8rem;
-          }
-          
           .badge-text {
-            font-size: 12px;
+            font-size: 11px;
+            letter-spacing: 1.2px;
           }
-          
+
+          .badge-line {
+            width: 48px;
+          }
+
+          .title-line {
+            font-size: 1.95rem; /* smaller to fit */
+          }
+
+          .main-title {
+            margin-bottom: 12px;
+            line-height: 1.06;
+          }
+
           .subtitle {
             font-size: 14px;
+            line-height: 1.45;
+            margin: 0 auto 18px;
+            max-width: 320px;
           }
-          
+
+          .cta-section {
+            margin-bottom: 18px;
+          }
+
           .cta-btn {
-            padding: 12px 28px;
-            font-size: 13px;
+            padding: 12px 22px;
+            font-size: 14px;
+            border-radius: 10px;
+            min-height: 44px;
           }
-          
+
+          /* Make metrics compact and not tall */
           .metrics-grid {
-            padding: 16px;
+            width: min(320px, 92vw);
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            padding: 12px 12px;
+            border-radius: 14px;
+          }
+
+          .metric-divider {
+            display: none; /* remove dividers in grid */
+          }
+
+          .metric-item {
+            min-width: 0;
+            padding: 6px 4px;
+          }
+
+          .metric-number {
+            font-size: 18px;
+            margin-bottom: 2px;
+          }
+
+          .metric-label {
+            font-size: 10px;
+            letter-spacing: 0.6px;
+            line-height: 1.15;
           }
         }
 
-        /* ===== PERFORMANCE & ACCESSIBILITY ===== */
+        /* Very small phones */
+        @media (max-width: 400px) {
+          .fashion-hero {
+            padding: 62px 0 50px;
+          }
+          .title-line {
+            font-size: 1.75rem;
+          }
+          .subtitle {
+            font-size: 13.5px;
+            max-width: 300px;
+          }
+          .metrics-grid {
+            width: min(300px, 92vw);
+          }
+          .metric-number {
+            font-size: 17px;
+          }
+          .metric-label {
+            font-size: 9.5px;
+          }
+        }
+
+        /* ===== ACCESSIBILITY ===== */
         .hero-video {
           will-change: opacity;
         }
@@ -521,23 +503,23 @@ export default function FashionBanner() {
           outline-offset: 2px;
         }
 
-        /* Reduced motion preference */
         @media (prefers-reduced-motion: reduce) {
-          .cta-btn:hover,
+          .cta-btn,
           .hero-video {
             transition: none;
           }
-          
+          .cta-btn:hover {
+            transform: none;
+          }
           .cta-btn:hover .btn-icon {
             transform: none;
           }
         }
 
-        /* Dark theme adjustments */
+        /* Dark theme */
         .theme-dark .fashion-hero {
           background: var(--tp-theme-1);
         }
-
         .theme-dark .primary-overlay {
           background: linear-gradient(
             135deg,
