@@ -198,7 +198,7 @@ const ProductItem = ({ product, index = 0 }) => {
   const finishVal = toText(pick(product?.finish, product?.subfinish?.name, product?.finishName, seoDoc?.finish));
   const structureVal = toText(pick(product?.structure, product?.substructure?.name, product?.structureName, seoDoc?.structure));
   const motifVal = toText(pick(product?.motif, product?.motifName, seoDoc?.motif));
-  const leadTimeVal = toText(pick(product?.leadtime, product?.leadTime, product?.lead_time, seoDoc?.leadTime));
+  const leadTimeVal = toText(pick(product?.leadTime, product?.lead_time, seoDoc?.leadTime));
 
   const details = uniq(
     [fabricTypeVal, contentVal, weightVal, designVal, colorsVal, widthVal, finishVal, structureVal, motifVal, leadTimeVal]
@@ -336,8 +336,6 @@ const ProductItem = ({ product, index = 0 }) => {
           <div className="product-image-container">
             <Link
               href={`/fabric/${slug}`}
-              target="_blank"
-              rel="noopener noreferrer"
               aria-label={`View ${titleText}`}
               className="image-link"
               onClick={(e) => {
@@ -367,7 +365,7 @@ const ProductItem = ({ product, index = 0 }) => {
               <button
                 type="button"
                 className="options-ribbon"
-                onClick={() => window.open(`/fabric/${slug}`, '_blank', 'noopener,noreferrer')}
+                onClick={() => router.push(`/fabric/${slug}`)}
                 aria-label={`${optionCount} options for ${titleText}`}
                 title={`${optionCount} options`}
               >
@@ -456,7 +454,7 @@ const ProductItem = ({ product, index = 0 }) => {
             {showCategory ? <div className="product-category">{categoryLabel}</div> : null}
 
             <h3 className="product-title">
-              <Link href={`/fabric/${slug}`} target="_blank" rel="noopener noreferrer" title={titleText}>
+              <Link href={`/fabric/${slug}`} title={titleText}>
                 <span dangerouslySetInnerHTML={{ __html: titleHtml }} />
               </Link>
             </h3>

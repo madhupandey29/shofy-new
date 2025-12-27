@@ -325,84 +325,30 @@ h1,h2,h3,h4,h5,h6{
   object-fit: contain !important; /* show the whole photo */
   object-position: center;
 }
-
-/* ===========================
-   Quick View Modal Mobile Fixes
-   =========================== */
-@media (max-width: 768px) {
-  /* Ensure modal content doesn't overflow on mobile */
-  .ReactModal__Content {
-    max-width: 95vw !important;
-    max-height: 95vh !important;
-    padding: 10px 15px !important;
-    overflow: auto !important; /* Enable scrolling */
-  }
-  
-  /* Fix wishlist button text wrapping */
-  .wishlist-btn {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  /* Ensure action buttons are properly sized */
-  .action-buttons {
-    flex-wrap: wrap;
-  }
-  
-  .action-btn {
-    min-height: 40px;
-    font-size: 12px !important;
-  }
-  
-  /* Ensure modal body doesn't get cut off */
-  .ReactModal__Body--open {
-    overflow: hidden;
-  }
+.tp-profile-avatar {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto; // centers it
 }
 
-@media (max-width: 480px) {
-  .ReactModal__Content {
-    max-width: 98vw !important;
-    padding: 8px 12px !important;
-    max-height: 98vh !important;
-  }
-  
-  /* Stack everything vertically on very small screens */
-  .action-buttons {
-    flex-direction: column !important;
-    gap: 8px !important;
-  }
-  
-  /* Keep wishlist button compact, don't make it full width */
-  .wishlist-btn {
-    width: 45px !important;
-    height: 38px !important;
-    align-self: center !important;
-  }
+/* OVAL (like your screenshot) */
+.tp-profile-avatar--oval {
+  width: 180px;
+  height: 180px;
 }
 
-/* ===========================
-   Wishlist Button Enhancement
-   =========================== */
-.wishlist-btn {
-  /* Fallback border colors for better visibility */
-  border-color: #d1d5db !important; /* Fallback gray border */
+/* If you want CIRCLE instead, use this class */
+.tp-profile-avatar--circle {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
 }
 
-.wishlist-btn:hover {
-  border-color: var(--tp-theme-primary, #3b82f6) !important;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2) !important;
+.tp-profile-avatar__img {
+  object-fit: cover;
+  object-position: center;
 }
-
-.wishlist-btn.active {
-  background: var(--tp-theme-primary, #3b82f6) !important;
-  border-color: var(--tp-theme-primary, #3b82f6) !important;
-}
-
-/* ===========================
-   Product Image Modal - Desktop Only
-   =========================== */
 @media (min-width: 769px) {
   .pdw-modal-overlay {
     padding: 60px 20px !important; /* Add top/bottom padding on desktop */
@@ -427,28 +373,4 @@ h1,h2,h3,h4,h5,h6{
   .pdw-main-inner:hover {
     transform: none !important;
   }
-}
-.tp-profile-avatar {
-  display: block;
-  position: relative;
-  overflow: hidden;
-  margin: 0 auto; // centers it
-}
-
-/* OVAL (like your screenshot) */
-.tp-profile-avatar--oval {
-  width: 180px;
-  height: 180px;
-}
-
-/* If you want CIRCLE instead, use this class */
-.tp-profile-avatar--circle {
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-}
-
-.tp-profile-avatar__img {
-  object-fit: cover;
-  object-position: center;
 }

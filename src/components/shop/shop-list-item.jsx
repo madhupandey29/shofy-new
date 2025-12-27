@@ -195,7 +195,7 @@ const ShopListItem = ({ product }) => {
   return (
     <div className="tp-product-list-item d-md-flex">
       <div className="tp-product-list-thumb p-relative fix">
-        <Link href={`/fabric/${slug}`} target="_blank" rel="noopener noreferrer">
+        <Link href={`/fabric/${slug}`}>
           {imageUrl && (
             <Image
               src={imageUrl}
@@ -264,7 +264,7 @@ const ShopListItem = ({ product }) => {
           <div className="tp-product-tag-2" />
 
           <h3 className="tp-product-title-2">
-            <Link href={`/fabric/${slug}`} target="_blank" rel="noopener noreferrer">{titleText}</Link>
+            <Link href={`/fabric/${slug}`}>{titleText}</Link>
           </h3>
 
           <div className="tp-product-rating-icon tp-product-rating-icon-2" aria-hidden="true" />

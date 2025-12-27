@@ -104,7 +104,7 @@ export default function ProductDetailsContent({ productItem }) {
 
   return (
     <section className="tp-product-details-area">
-      <div className="tp-product-details-top pb-115">
+      <div className="tp-product-details-top pb-25">
         <div className="container">
           <div className="row">
             {/* Left: gallery */}

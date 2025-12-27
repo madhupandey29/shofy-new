@@ -363,11 +363,11 @@ const DetailsWrapper = ({ productItem = {} }) => {
         <div className="action-buttons">
           <button className="action-btn primary">
             <i className="fa-regular fa-file-lines"></i>
-            Request Sample
+            <span className="btn-text">Request Sample</span>
           </button>
           <button className="action-btn secondary">
             <i className="fa-regular fa-comment-dots"></i>
-            Request Quote
+            <span className="btn-text">Request Quote</span>
           </button>
           <button
             type="button"
@@ -382,7 +382,7 @@ const DetailsWrapper = ({ productItem = {} }) => {
 
       <style jsx>{`
         .product-details-modern-wrapper {
-          padding: 0 0 20px 0; /* Add bottom padding to ensure buttons are visible */
+          padding: 0 0 20px 0;
           height: fit-content;
         }
 
@@ -486,16 +486,16 @@ const DetailsWrapper = ({ productItem = {} }) => {
           flex: 1;
         }
 
-        /* Action Section - Balanced */
+        /* Action Section - Improved for mobile */
         .action-section {
           margin-top: 20px;
-          margin-bottom: 10px; /* Add bottom margin for mobile */
+          margin-bottom: 10px;
         }
 
         .action-buttons {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 10px;
         }
 
         .action-btn {
@@ -504,7 +504,7 @@ const DetailsWrapper = ({ productItem = {} }) => {
           align-items: center;
           justify-content: center;
           gap: 8px;
-          padding: 14px 20px;
+          padding: 14px 10px;
           border: none;
           border-radius: 10px;
           font-family: var(--tp-ff-jost);
@@ -514,10 +514,18 @@ const DetailsWrapper = ({ productItem = {} }) => {
           letter-spacing: 0.3px;
           transition: all 0.2s ease;
           cursor: pointer;
+          min-height: 50px;
         }
 
         .action-btn i {
           font-size: 16px;
+          flex-shrink: 0;
+        }
+
+        .btn-text {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .action-btn.primary {
@@ -532,7 +540,8 @@ const DetailsWrapper = ({ productItem = {} }) => {
 
         .action-btn.secondary {
           background: var(--tp-theme-secondary);
-          color: var(--tp-theme-primary); /* Blue text instead of white */
+          color: var(--tp-theme-primary);
+          border: 1px solid var(--tp-theme-primary);
         }
 
         .action-btn.secondary:hover {
@@ -544,6 +553,7 @@ const DetailsWrapper = ({ productItem = {} }) => {
 
         .wishlist-btn {
           width: 50px;
+          min-width: 50px;
           height: 50px;
           background: var(--tp-common-white);
           border: 2px solid var(--tp-grey-3);
@@ -572,7 +582,7 @@ const DetailsWrapper = ({ productItem = {} }) => {
           box-shadow: 0 4px 12px rgba(var(--tp-theme-primary-rgb), 0.3);
         }
 
-        /* Responsive Design */
+        /* Responsive Design - Improved for mobile buttons */
         @media (max-width: 768px) {
           .product-title {
             font-size: 20px;
@@ -586,22 +596,40 @@ const DetailsWrapper = ({ productItem = {} }) => {
             gap: 6px;
           }
 
+          /* Improved mobile button layout */
           .action-buttons {
-            flex-direction: column;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 8px;
+            align-items: stretch;
           }
 
           .action-btn {
+            min-height: 44px;
+            padding: 10px 8px;
+            font-size: 11px;
+            gap: 4px;
             width: 100%;
-            padding: 12px 16px;
-            font-size: 12px;
+            overflow: hidden;
+          }
+
+          .action-btn i {
+            font-size: 14px;
+          }
+
+          .btn-text {
+            font-size: 11px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
           }
 
           .wishlist-btn {
-            width: 50px; /* Keep compact on mobile */
+            width: 44px;
+            min-width: 44px;
             height: 44px;
             font-size: 16px;
-            align-self: center; /* Center the wishlist button */
+            align-self: stretch;
           }
           
           .fact-label {
@@ -612,27 +640,20 @@ const DetailsWrapper = ({ productItem = {} }) => {
           .fact-value {
             font-size: 12px;
           }
+        }
 
-          /* Compact action buttons for mobile */
-          .compact-actions-row {
-            margin-top: 10px;
-            padding-top: 10px;
-            gap: 6px;
+        @media (max-width: 640px) {
+          /* Stack layout for very small screens */
+          .action-buttons {
+            grid-template-columns: 1fr;
+            gap: 10px;
           }
-
-          .view-more-btn-compact {
-            padding: 8px 12px;
-            font-size: 11px;
-          }
-
-          .view-more-btn-compact i {
-            font-size: 12px;
-          }
-
-          .wishlist-btn-compact {
-            width: 40px;
-            height: 40px;
-            font-size: 14px;
+          
+          .wishlist-btn {
+            width: 100%;
+            min-width: auto;
+            height: 44px;
+            margin-top: 5px;
           }
         }
 
@@ -646,21 +667,30 @@ const DetailsWrapper = ({ productItem = {} }) => {
             padding: 10px;
           }
 
+          /* Compact three-column layout for small phones */
           .action-buttons {
-            gap: 8px;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 6px;
           }
 
           .action-btn {
-            padding: 10px 14px;
-            font-size: 11px;
+            min-height: 40px;
+            padding: 8px 6px;
+            font-size: 10px;
+            gap: 3px;
           }
 
           .action-btn i {
-            font-size: 14px;
+            font-size: 12px;
+          }
+
+          .btn-text {
+            font-size: 10px;
           }
 
           .wishlist-btn {
-            width: 45px; /* Slightly smaller on very small screens */
+            width: 40px;
+            min-width: 40px;
             height: 40px;
             font-size: 14px;
           }
@@ -673,25 +703,26 @@ const DetailsWrapper = ({ productItem = {} }) => {
           .fact-value {
             font-size: 11px;
           }
+        }
 
-          /* Very small mobile compact actions */
-          .compact-actions-row {
-            margin-top: 8px;
-            padding-top: 8px;
-            gap: 5px;
+        /* Alternative: Icon-only buttons for very small screens */
+        @media (max-width: 360px) {
+          .action-btn {
+            padding: 8px 4px;
           }
-
-          .view-more-btn-compact {
-            padding: 6px 10px;
-            font-size: 10px;
+          
+          .btn-text {
+            display: none;
           }
-
-          .view-more-btn-compact i {
-            font-size: 11px;
+          
+          .action-btn i {
+            margin: 0;
+            font-size: 14px;
           }
-
-          .wishlist-btn-compact {
+          
+          .wishlist-btn {
             width: 36px;
+            min-width: 36px;
             height: 36px;
             font-size: 13px;
           }

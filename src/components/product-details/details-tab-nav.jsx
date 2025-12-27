@@ -64,7 +64,6 @@ function ValuePill({ value, unit, title }) {
           align-items: center;
           gap: 8px;
           padding: 8px 16px;
-          background: var(--tp-grey-1);
           border: 1px solid var(--tp-grey-2);
           border-radius: 24px;
           font-family: var(--tp-ff-roboto);
@@ -171,7 +170,6 @@ function FaqBlock({ items = [] }) {
           .no-faqs {
             text-align: center;
             padding: 40px 20px;
-            background: var(--tp-grey-1);
             border-radius: 12px;
             border: 1px dashed var(--tp-grey-2);
           }
@@ -223,7 +221,6 @@ function FaqBlock({ items = [] }) {
         }
 
         .faq-item {
-          background: var(--tp-grey-1);
           border: 1px solid var(--tp-grey-2);
           border-radius: 12px;
           overflow: hidden;
@@ -616,7 +613,6 @@ export default function DetailsTabNav({ product = {} }) {
         }
 
         .hero-section {
-          background: var(--tp-grey-1);
           padding: 32px 0;
         }
 
@@ -693,7 +689,6 @@ export default function DetailsTabNav({ product = {} }) {
         }
 
         .specs-table {
-          background: var(--tp-grey-1);
           border-radius: 8px;
           overflow: hidden;
           border: 1px solid var(--tp-grey-2);
