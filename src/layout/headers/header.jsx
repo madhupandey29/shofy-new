@@ -28,10 +28,10 @@ const Header = () => {
   return (
     <>
       <header>
-        <div className="tp-header-area p-relative z-index-11">
+        <div className="tp-header-area p-relative z-index-11" style={{ overflow: 'visible' }}>
           {/* header top start  */}
-          <div className="tp-header-top black-bg p-relative z-index-1 d-none d-md-block">
-            <div className="container">
+          <div className="tp-header-top black-bg p-relative z-index-1 d-none d-md-block" style={{ overflow: 'visible' }}>
+            <div className="container" style={{ overflow: 'visible' }}>
               <div className="row align-items-center">
                 <div className="col-md-6">
                   <div className="tp-header-welcome d-flex align-items-center">
@@ -42,7 +42,7 @@ const Header = () => {
                   </div>
                 </div>
                 <div className="col-md-6">
-                  <div className="tp-header-top-right d-flex align-items-center justify-content-end">
+                  <div className="tp-header-top-right d-flex align-items-center justify-content-end" style={{ overflow: 'visible' }}>
                     <HeaderTopRight />
                   </div>
                 </div>

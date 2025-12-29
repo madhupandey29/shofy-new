@@ -375,14 +375,14 @@ const HeaderTwo = ({ style_2 = false }) => {
   return (
     <>
       <header>
-        <div className={`tp-header-area tp-header-style-${style_2 ? 'primary' : 'darkRed'} tp-header-height`}>
+        <div className={`tp-header-area tp-header-style-${style_2 ? 'primary' : 'darkRed'} tp-header-height`} style={{ overflow: 'visible' }}>
           <div
             id="header-sticky"
             className={`tp-header-bottom-2 tp-header-sticky ${sticky ? 'header-sticky' : ''}`}
             style={{ position: 'relative', overflow: 'visible' }}
           >
-            <div className="container">
-              <div className="tp-mega-menu-wrapper p-relative">
+            <div className="container" style={{ overflow: 'visible' }}>
+              <div className="tp-mega-menu-wrapper p-relative" style={{ overflow: 'visible' }}>
                 <div className="row align-items-center">
                   {/* Logo */}
                   <div className="col-6 col-sm-4 col-md-4 col-lg-3 col-xl-2">
@@ -473,7 +473,7 @@ const HeaderTwo = ({ style_2 = false }) => {
                       {/* Actions */}
                       <div className="tp-header-action d-flex align-items-center">
                         {/* User / Auth */}
-                        <div className="tp-header-action-item me-2 position-relative">
+                        <div className="tp-header-action-item me-2 position-relative" style={{ overflow: 'visible' }}>
                           {hasSession ? (
                             <>
                               <button
@@ -662,7 +662,7 @@ const HeaderTwo = ({ style_2 = false }) => {
           position:absolute;
           right:0;
           top:calc(100% + 12px);
-          z-index:1000;
+          z-index:10000;
           min-width: 230px;
           background:#fff;
           border-radius:12px;

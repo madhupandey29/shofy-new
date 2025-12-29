@@ -16,7 +16,7 @@ function ProfileSetting({ active, handleActive }) {
   };
 
   return (
-    <div className="tp-header-top-menu-item tp-header-setting">
+    <div className="tp-header-top-menu-item tp-header-setting" style={{ position: 'relative', overflow: 'visible' }}>
       <button
         type="button"
         onClick={() => handleActive('setting')}
@@ -27,7 +27,7 @@ function ProfileSetting({ active, handleActive }) {
         Setting
       </button>
 
-      <ul className={active === 'setting' ? "tp-setting-list-open" : ""}>
+      <ul className={active === 'setting' ? "tp-setting-list-open" : ""} style={{ zIndex: 10000 }}>
         <li>
           <Link href="/profile" title="My Profile">My Profile</Link>
         </li>
@@ -65,7 +65,7 @@ const HeaderTopRight = () => {
   };
 
   return (
-    <div className="tp-header-top-menu d-flex align-items-center justify-content-end">
+    <div className="tp-header-top-menu d-flex align-items-center justify-content-end" style={{ overflow: 'visible' }}>
       <ProfileSetting active={active} handleActive={handleActive} />
     </div>
   );

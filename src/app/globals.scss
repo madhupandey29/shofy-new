@@ -221,8 +221,30 @@ h1,h2,h3,h4,h5,h6{
   }
 }
 
-/* Ensure product area isn’t clipped */
+/* Ensure product area isn't clipped */
 .tp-shop-main-wrapper{ overflow: visible; }
+
+/* ===========================
+   Header Dropdown Overflow Fix
+   =========================== */
+/* Ensure header dropdowns can overflow outside header containers */
+.tp-header-area,
+.tp-header-top,
+.tp-header-bottom-2,
+.tp-header-sticky,
+.tp-mega-menu-wrapper,
+.tp-header-top-menu,
+.tp-header-top-menu-item,
+.tp-header-setting,
+.tp-header-action-item {
+  overflow: visible !important;
+}
+
+/* Ensure dropdown menus have proper z-index */
+.tp-setting-list-open,
+.user-menu-dropdown {
+  z-index: 10000 !important;
+}
 
 /* ===========================
    Sticky Sidebar (Filter panel)
